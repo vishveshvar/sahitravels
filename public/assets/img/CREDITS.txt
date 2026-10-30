@@ -1,0 +1,6 @@
+Image sources (Unsplash — free to use under the Unsplash License, credit appreciated)
+  tours-overwater.jpg    https://unsplash.com/photos/wRs01D51Zl4
+  pilgrimage-mosque.jpg  https://unsplash.com/photos/7_COgbItdkQ
+  cruise-sunset.jpg      https://unsplash.com/photos/haZNHEV2WXQ
+
+All other artwork on this page (Nila, the vehicles, scenery, passport) is inline SVG inside index.html.
