@@ -8,6 +8,8 @@
   --color-dusty-rose: #C9A0A7;
   --color-deep-plum: #3A0F34;
   --color-terracotta: #C75A3A;
+  --color-rose: #c9a0a7;
+  --color-plum: #3A2A34;
 
   /* Supporting Colours */
   --color-warm-ivory: #FAF6F2;
@@ -62,7 +64,7 @@ body {
   margin: 0; background: var(--bg); color: var(--ink);
   font-family: var(--f-display); font-size: 16px; line-height: 1.6;
   -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 img { display: block; max-width: 100%; }
 a { color: inherit; text-decoration: none; }
@@ -237,23 +239,183 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .ride__actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
 
 /* ==========================================================================
-   Documents desk
+   Documents desk — ScrollStack Cards
    ========================================================================== */
-.docs__grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(30px, 5vw, 80px); align-items: center; }
-.passport { position: relative; }
-.passport svg { display: block; width: 100%; height: auto; overflow: visible; filter: drop-shadow(0 30px 40px rgba(58, 15, 52, .14)); }
-.pp-l { font-family: var(--f-mono); font-size: 8.5px; letter-spacing: .16em; fill: #9B7E97; }
-.pp-v { font-family: var(--f-display); font-size: 14px; font-weight: 500; fill: var(--navy); }
-.pp-m { font-family: var(--f-mono); font-size: 11px; letter-spacing: .06em; fill: var(--color-muted-plum); }
-.passport__controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 26px; }
-.passport__count { color: var(--ink-3); }
-.passport__msg { margin: 12px 0 0; min-height: 1.5em; color: var(--apricot-ink); font-size: 15px; }
-.doclist { list-style: none; margin: 34px 0 0; padding: 0; }
-.doclist li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 16px; padding: 18px 0; border-top: 1px solid var(--line); }
-.doclist li:last-child { border-bottom: 1px solid var(--line); }
-.doclist svg { width: 40px; height: 40px; padding: 9px; border-radius: 12px; background: var(--sky-2); color: var(--navy); }
-.doclist h3 { margin: 0 0 4px; font-size: 17px; font-weight: 500; }
-.doclist p { margin: 0; color: var(--ink-2); font-size: 15px; }
+.docs__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  gap: clamp(30px, 5vw, 60px);
+  align-items: start;
+}
+.docs__head {
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 120px;
+}
+.docs__nila {
+  margin-top: clamp(24px, 3.5vw, 40px);
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+}
+.docs__bubble {
+  position: relative;
+  max-width: 270px;
+  margin-bottom: 24px;
+  padding: 12px 14px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 18px 18px 18px 6px;
+  box-shadow: var(--shadow);
+  font-size: 14px;
+  line-height: 1.45;
+  position: relative;
+}
+.docs__bubble::after {
+  content: "";
+  position: absolute;
+  left: -7px;
+  bottom: 14px;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-left: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  transform: rotate(45deg);
+}
+.docs__bubble .bubble__name {
+  display: block;
+  font-family: var(--f-mono);
+  font-size: 10.5px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--apricot-ink);
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+.docs__speech {
+  display: block;
+  color: var(--ink);
+}
+.docs__mascot {
+  width: 76px;
+  height: 160px;
+  flex-shrink: 0;
+}
+.docs__mascot svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+@media (max-width: 899px) {
+  .docs__grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .docs__head {
+    position: static;
+  }
+  .docs__nila {
+    margin-top: 16px;
+    margin-bottom: 14px;
+    gap: 12px;
+  }
+  .docs__bubble {
+    max-width: 230px;
+    font-size: 13px;
+    margin-bottom: 16px;
+  }
+  .docs__mascot {
+    width: 60px;
+    height: 126px;
+  }
+}
+.docs__grid .scroll-stack.scroll-stack--window {
+  overflow: visible;
+  height: auto;
+}
+.docs__grid .scroll-stack__inner {
+  padding-inline: 0;
+}
+.scroll-stack .paperwork-card {
+  height: 340px;
+  width: 100%;
+  border-radius: 24px;
+  padding: 0;
+  overflow: hidden;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid rgba(58, 42, 52, 0.12);
+  box-shadow: 0 4px 20px rgba(58, 42, 52, 0.08), 0 16px 36px rgba(58, 42, 52, 0.06);
+  display: flex;
+  flex-direction: column;
+}
+@media (max-width: 899px) {
+  .scroll-stack .paperwork-card {
+    height: 300px;
+  }
+}
+.paperwork-card__img {
+  width: 100%;
+  height: 58%;
+  object-fit: cover;
+  border-radius: 24px 24px 0 0;
+  display: block;
+  flex-shrink: 0;
+}
+.paperwork-card__body {
+  height: 42%;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+}
+@media (max-width: 899px) {
+  .paperwork-card__body {
+    padding: 14px 18px;
+  }
+}
+.paperwork-card__label {
+  font-family: var(--f-mono);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-terracotta);
+  font-weight: 600;
+  margin: 0 0 4px;
+  display: block;
+}
+.paperwork-card__title {
+  font-family: var(--f-display);
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--color-plum);
+  margin: 0 0 6px;
+  line-height: 1.2;
+}
+@media (max-width: 899px) {
+  .paperwork-card__title {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+}
+.paperwork-card__text {
+  font-family: var(--f-display);
+  font-size: 15px;
+  line-height: 1.5;
+  color: rgba(58, 42, 52, 0.75);
+  margin: 0;
+}
+@media (max-width: 899px) {
+  .paperwork-card__text {
+    font-size: 13.5px;
+    line-height: 1.4;
+  }
+}
+.scroll-stack-card__shade {
+  background: #3A2A34 !important;
+}
 
 /* ==========================================================================
    Holidays
@@ -290,13 +452,58 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .film__items p { margin: 0; color: var(--ink-2); font-size: 15px; }
 
 /* corporate */
-.corp { background: #fff; }
-.ccards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 2vw, 28px); }
-.ccard { padding: clamp(24px, 2.6vw, 36px); border-radius: 26px; background: var(--bg); border: 1px solid var(--line); transition: transform .5s var(--ease), box-shadow .5s var(--ease), background-color .5s; }
-.ccard:hover { transform: translateY(-6px); box-shadow: var(--shadow); background: #fff; }
-.ccard svg { width: 48px; height: 48px; color: var(--navy); }
-.ccard h3 { margin: 26px 0 10px; font-size: 20px; font-weight: 500; color: var(--navy); }
-.ccard p { margin: 0; color: var(--ink-2); font-size: 15px; }
+.corp { background: #fff; overflow-x: clip; }
+.travel-desks-gallery {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  padding: 0 var(--gutter);
+  box-sizing: border-box;
+}
+.travel-desks-details {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  padding: clamp(28px, 3.5vw, 44px) var(--gutter) 0;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(20px, 2.5vw, 36px);
+}
+@media (max-width: 899px) {
+  .travel-desks-details {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding-top: 24px;
+  }
+}
+.travel-desks-col {
+  display: flex;
+  flex-direction: column;
+}
+.travel-desks-label {
+  font-family: var(--f-mono);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-terracotta);
+  font-weight: 600;
+  margin: 0 0 8px;
+  display: block;
+}
+.travel-desks-title {
+  font-family: var(--f-display);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--color-plum);
+  margin: 0 0 10px;
+  line-height: 1.25;
+}
+.travel-desks-desc {
+  font-family: var(--f-display);
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(58, 42, 52, 0.75);
+  margin: 0;
+}
 
 /* strength */
 .strength { text-align: left; }
@@ -408,7 +615,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .ride__grid { grid-template-columns: 1fr; }
   .ride__scene { aspect-ratio: 840 / 520; }
   .docs__grid { grid-template-columns: 1fr; }
-  .hcards, .ccards, .events__grid { grid-template-columns: 1fr; }
+  .hcards, .events__grid { grid-template-columns: 1fr; }
   .film { grid-template-columns: 1fr; }
   .facts { grid-template-columns: 1fr 1fr; }
   .enquire__grid { grid-template-columns: 1fr; }
