@@ -1,3 +1,5 @@
+import { CONTACT_DETAILS } from "@/data/contact";
+
 export default function Footer() {
   return (
     <footer
@@ -16,20 +18,18 @@ export default function Footer() {
         </div>
         <div className="footer__cols">
           <div>
-            <h3 className="mono">Offices</h3>
-            <p>Chennai — since 2005</p>
-            <p>Keelakarai, Ramanathapuram District — since 2000</p>
-          </div>
-          <div>
             <h3 className="mono">Contact</h3>
-            <a data-contact="phone" href="#">
-              —
+            <a data-contact="phone" href={CONTACT_DETAILS.phone.telLink}>
+              {CONTACT_DETAILS.phone.display}
             </a>
-            <a data-contact="whatsapp" href="#" target="_blank" rel="noopener">
-              —
+            <a data-contact="whatsapp" href={CONTACT_DETAILS.whatsapp.link} target="_blank" rel="noopener">
+              {CONTACT_DETAILS.whatsapp.label}
             </a>
-            <a data-contact="email" href="#">
-              —
+            <a data-contact="email" href={CONTACT_DETAILS.email.mailtoLink}>
+              {CONTACT_DETAILS.email.address}
+            </a>
+            <a data-contact="website" href={CONTACT_DETAILS.website.url} target="_blank" rel="noopener">
+              {CONTACT_DETAILS.website.display}
             </a>
           </div>
           <div>

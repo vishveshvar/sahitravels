@@ -58,7 +58,6 @@ export default function DocsSection() {
               height={1792}
             />
             <div className="paperwork-card__body">
-              <span className="paperwork-card__label">01 / 04</span>
               <h3 className="paperwork-card__title">Visa services</h3>
               <p className="paperwork-card__text">
                 Tourist, visit, business and student visas. Family and group
@@ -78,7 +77,6 @@ export default function DocsSection() {
               height={1792}
             />
             <div className="paperwork-card__body">
-              <span className="paperwork-card__label">02 / 04</span>
               <h3 className="paperwork-card__title">Passport services</h3>
               <p className="paperwork-card__text">
                 New passports, renewals and reissues, corrections and
@@ -98,7 +96,6 @@ export default function DocsSection() {
               height={1792}
             />
             <div className="paperwork-card__body">
-              <span className="paperwork-card__label">03 / 04</span>
               <h3 className="paperwork-card__title">Certificate attestation</h3>
               <p className="paperwork-card__text">
                 Educational, marriage and birth certificates, commercial
@@ -118,7 +115,6 @@ export default function DocsSection() {
               height={1792}
             />
             <div className="paperwork-card__body">
-              <span className="paperwork-card__label">04 / 04</span>
               <h3 className="paperwork-card__title">Travel insurance</h3>
               <p className="paperwork-card__text">
                 Domestic and international travel insurance.

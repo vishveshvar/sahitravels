@@ -296,36 +296,7 @@
     </svg>`;
   }
 
-  function buildRide() {
-    seed = 5;
-    let skyline = '';
-    for (let x = -40; x < 1240;) { const w = 40 + rnd() * 40, h = 50 + rnd() * 110; skyline += building(x, 300, w, h, rnd() > .5 ? '#D9E5F2' : '#E2EBF5'); x += w + 6 + rnd() * 14; }
-    return `<svg viewBox="0 0 1200 520" preserveAspectRatio="xMidYMid slice" aria-label="Street scene with Nila and the selected vehicle">
-      <defs><linearGradient id="rsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D6E8F9"/><stop offset="1" stop-color="#F4F8FD"/></linearGradient></defs>
-      <rect width="1200" height="520" fill="url(#rsky)"/>
-      <circle cx="980" cy="104" r="42" fill="#FFDCC0"/>
-      <g class="r-clouds">${cloud(120, 120, .7, 1, 'rc')}${cloud(520, 80, .9, 1, 'rc')}${cloud(860, 160, .55, 1, 'rc')}</g>
-      ${skyline}
-      <rect x="0" y="300" width="1200" height="92" fill="#EEF3EC"/>
-      ${palm(150, 302, .62)}${palm(330, 302, .5)}${tree(870, 302, .5)}${palm(1180, 302, .55)}
-      <path d="M0 377H1200" stroke="#CBD3DE" stroke-width="7" stroke-dasharray="5 15"/><path d="M0 372H1200" stroke="#94A2B8" stroke-width="3"/>
-      <rect x="0" y="392" width="1200" height="108" fill="#E8EDF3"/>
-      <path d="M0 393H1200" stroke="#DCE3EC" stroke-width="3"/>
-      <path d="M0 444H1200" stroke="#fff" stroke-width="5" stroke-dasharray="40 34"/>
-      <rect x="0" y="500" width="1200" height="20" fill="#EEF3EC"/>
-      <path d="M1112 480V330" stroke="#9AA6BD" stroke-width="5"/>
-      <rect x="1062" y="300" width="104" height="40" rx="10" fill="${C.apricot}"/>
-      <text x="1114" y="317" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="2" fill="${C.ink || '#0F1B33'}">SAHI</text>
-      <text x="1114" y="331" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="2" fill="#0F1B33">PICKUP</text>
-      <g id="rTrain" class="veh" tabindex="0" role="button" aria-label="Rail: tap to hear it"><g transform="scale(.75)">${vTrain('rtr')}</g></g>
-      <g id="rPlane" class="veh" tabindex="0" role="button" aria-label="Flight: tap to hear it"><g transform="scale(.7)">${vPlane('rpl')}</g></g>
-      <g id="rCoach" class="veh" tabindex="0" role="button" aria-label="Coach: tap to hear it"><g transform="scale(.95)">${vCoach('rco')}</g></g>
-      <g id="rMpv" class="veh" tabindex="0" role="button" aria-label="VIP car: tap to hear it"><g transform="scale(1.15)">${vMpv('rmp')}</g></g>
-      <g id="rTaxi" class="veh" tabindex="0" role="button" aria-label="Taxi: tap to hear it"><g transform="scale(1.15)">${vTaxi('rtx')}</g></g>
-      <g id="rNila">${nilaShadow(0, 0, 22)}<g transform="scale(.44) translate(-85 -356)">${nilaRig()}</g></g>
-      <g id="rHonk" opacity="0"><rect x="-74" y="-30" width="148" height="44" rx="22" fill="#fff" stroke="#E2E8F0"/><path d="M-10 13L0 26L10 13Z" fill="#fff"/><text x="0" y="-2" text-anchor="middle" dominant-baseline="middle" font-family="Archivo, sans-serif" font-weight="600" font-size="18" fill="${C.navy}">Beep!</text></g>
-    </svg>`;
-  }
+
 
   function buildHero() {
     let clouds = '';
@@ -425,7 +396,6 @@
 
 export {
   buildJourney,
-  buildRide,
   buildHero,
   buildGuide,
   buildPassport,

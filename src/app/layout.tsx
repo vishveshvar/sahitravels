@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { VehicleBookingProvider } from "@/context/VehicleBookingContext";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -32,7 +34,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=·rchivo:wdth,wght@62..125,100..900&family=Cormorant+Garamond:ital,wght@1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Cormorant+Garamond:ital,wght@1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap"
           rel="stylesheet"
         />
         <script
@@ -41,7 +43,9 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <VehicleBookingProvider>{children}</VehicleBookingProvider>
+      </body>
     </html>
   );
 }

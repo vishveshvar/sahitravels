@@ -3,7 +3,7 @@
 import SkipLink from "@/components/layout/SkipLink";
 import Nav from "@/components/layout/Nav";
 import HeroSection from "@/components/sections/HeroSection";
-import TrustSection from "@/components/sections/TrustSection";
+import OfficesSection from "@/components/sections/OfficesSection";
 import JourneySection from "@/components/sections/JourneySection";
 import RideSection from "@/components/sections/RideSection";
 import DocsSection from "@/components/sections/DocsSection";
@@ -25,7 +25,7 @@ export default function Home() {
       <Nav />
       <main id="main">
         <HeroSection />
-        <TrustSection />
+        <OfficesSection />
         <JourneySection />
         <RideSection />
         <DocsSection />

@@ -64,21 +64,18 @@ export default function CorporateSection() {
 
         <div className="travel-desks-details">
           <div className="travel-desks-col">
-            <span className="travel-desks-label">01 / 03</span>
             <h3 className="travel-desks-title">Corporate travel management</h3>
             <p className="travel-desks-desc">
               Corporate flights, employee and business travel, hotels, airport transfers, executive cars, conference and event transport.
             </p>
           </div>
           <div className="travel-desks-col">
-            <span className="travel-desks-label">02 / 03</span>
             <h3 className="travel-desks-title">Group travel</h3>
             <p className="travel-desks-desc">
               Family and corporate groups, school and college trips, associations — group flights, hotels, transport and custom packages.
             </p>
           </div>
           <div className="travel-desks-col">
-            <span className="travel-desks-label">03 / 03</span>
             <h3 className="travel-desks-title">B2B travel services</h3>
             <p className="travel-desks-desc">
               B2B flight ticketing and group fares, hotel and transport B2B, tour packages, travel-agent support and wholesale solutions.

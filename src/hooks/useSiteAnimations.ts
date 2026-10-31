@@ -14,6 +14,77 @@ declare global {
   }
 }
 
+
+export interface StampOptions {
+  rotation?: number;
+  initialRotationOffset?: number;
+  scaleStart?: number;
+  duration?: number;
+  ease?: string;
+  finalOpacity?: number;
+  x?: number;
+  y?: number;
+  onComplete?: () => void;
+}
+
+/**
+ * Reusable stamp imprint animation.
+ * Recreates the authentic NJ Travels passport & ticket stamp physics:
+ * duration 0.12s, ease "power2.out", slamming down from scale 1.25 and (rotation - 8deg).
+ */
+export function playStamp(
+  el: HTMLElement | SVGElement,
+  options: StampOptions = {}
+) {
+  const targetRotation = options.rotation ?? 0;
+  const rotOffset = options.initialRotationOffset ?? 8;
+  const startScale = options.scaleStart ?? 1.25;
+  const duration = options.duration ?? 0.12;
+  const ease = options.ease ?? "power2.out";
+  const finalOpacity = options.finalOpacity ?? 1;
+
+  const reduce =
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const fromVars: gsap.TweenVars = {
+    opacity: 0,
+    scale: startScale,
+    rotation: targetRotation - rotOffset,
+  };
+  if (options.x !== undefined) fromVars.x = options.x;
+  if (options.y !== undefined) fromVars.y = options.y;
+
+  const toVars: gsap.TweenVars = {
+    opacity: finalOpacity,
+    scale: 1,
+    rotation: targetRotation,
+    duration,
+    ease,
+    onComplete: () => {
+      el.classList.add("is-stamped");
+      options.onComplete?.();
+    },
+  };
+  if (options.x !== undefined) toVars.x = options.x;
+  if (options.y !== undefined) toVars.y = options.y;
+
+  if (reduce) {
+    gsap.set(el, {
+      opacity: finalOpacity,
+      scale: 1,
+      rotation: targetRotation,
+      ...(options.x !== undefined ? { x: options.x } : {}),
+      ...(options.y !== undefined ? { y: options.y } : {}),
+    });
+    el.classList.add("is-stamped");
+    options.onComplete?.();
+    return null;
+  }
+
+  return gsap.fromTo(el, fromVars, toVars);
+}
+
 export function useSiteAnimations() {
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -22,10 +93,10 @@ export function useSiteAnimations() {
     window.ScrollTrigger = ScrollTrigger;
 
     const CONTACT = {
-      phoneDisplay: "+91 00000 00000",
-      phoneDial: "+910000000000",
-      whatsapp: "910000000000",
-      email: "hello@example.com",
+      phoneDisplay: "+91 8608925574",
+      phoneDial: "+918608925574",
+      whatsapp: "918608925574",
+      email: "booking@sahitravels.com",
     };
 
     const $ = <T extends Element = HTMLElement>(s: string, c: ParentNode = document): T | null =>
@@ -523,7 +594,7 @@ export function useSiteAnimations() {
       }
 
       const words = $$(".hero h1 .wi");
-      const others = $$(".hero__copy .eyebrow, .hero__copy .lede, .hero__ctas, .hero__meta");
+      const others = $$(".hero__copy .eyebrow, .hero__copy .lede, .hero__ctas");
       if (reduce) {
         gsap.set(bubble, { autoAlpha: 1 });
         return;
@@ -778,379 +849,9 @@ export function useSiteAnimations() {
     });
 
     /* ==================================================================
-       RIDE — choose a vehicle, honk it, send Nila for a spin
-       ================================================================== */
-    safe("ride", () => {
-      const svg = $("#rideScene svg");
-      if (!svg) return;
-      const nilaG = $("#rNila", svg);
-      if (!nilaG) return;
-      const rig = new Rig(nilaG).idle();
-      rigs.push({ rig, el: nilaG });
-      const honk = $("#rHonk", svg);
-      const honkText = honk ? $("text", honk) : null;
-      gsap.set($$(".wheel", svg), { transformOrigin: "50% 50%" });
-      gsap.set($$(".mini-hand", svg), { transformOrigin: "0% 100%" });
-      gsap.set($$(".mini-wrap", svg), { autoAlpha: 0 });
-      gsap.set($(".porthole", svg), { autoAlpha: 0 });
-      gsap.set($(".door", svg), { opacity: 1 });
-
-      const fit = () => svg.setAttribute("viewBox", isWide() ? "0 0 1200 520" : "360 0 840 520");
-      fit();
-      window.addEventListener("resize", fit);
-
-      if (!reduce) {
-        $$(".rc", svg).forEach((c, i) =>
-          gsap.to(c, {
-            x: "+=" + (40 + i * 30),
-            duration: 10 + i * 3,
-            repeat: -1,
-            yoyo: true,
-            ease: "sine.inOut",
-          })
-        );
-      }
-
-      const HOME = { x: 1030, y: 478 };
-      gsap.set(nilaG, HOME);
-
-      interface RideDef {
-        g: Element | null;
-        x: number;
-        y: number;
-        door: number;
-        r: number;
-        h: number;
-        name: string;
-        text: string;
-        chips: string[];
-        honk: string;
-        say: string;
-        book: string;
-        rail?: boolean;
-        air?: boolean;
-      }
-
-      const RIDES: Record<string, RideDef> = {
-        taxi: {
-          g: $("#rTaxi", svg),
-          x: 600,
-          y: 472,
-          door: -46,
-          r: 24,
-          h: 120,
-          name: "Taxi & transfers",
-          text: "Local and outstation taxis, one-way and round trips, airport and railway transfers, and chauffeur-driven cars between cities.",
-          chips: ["Airport", "Railway", "Outstation", "Intercity"],
-          honk: "Beep beep!",
-          say: "Airport run or an outstation trip? Hop in.",
-          book: "Taxi or transfer",
-        },
-        vip: {
-          g: $("#rMpv", svg),
-          x: 600,
-          y: 472,
-          door: -39,
-          r: 26.5,
-          h: 140,
-          name: "VIP & luxury cars",
-          text: "Executive cars for VIP airport transfers, corporate leaders, celebrities and wedding days.",
-          chips: ["Toyota Vellfire", "Mercedes-Benz", "BMW", "Audi", "Premium SUVs"],
-          honk: "Vroom!",
-          say: "Arriving somewhere important? Take the Vellfire.",
-          book: "VIP or luxury car",
-        },
-        coach: {
-          g: $("#rCoach", svg),
-          x: 600,
-          y: 472,
-          door: 204,
-          r: 25.6,
-          h: 167,
-          name: "Premium coaches",
-          text: "Volvo and Mercedes-Benz luxury coaches, premium AC, executive and sleeper coaches for groups, companies, weddings and airport runs.",
-          chips: ["Volvo", "Mercedes-Benz", "Premium AC", "Sleeper"],
-          honk: "Honk honk!",
-          say: "Travelling as a group? Everyone fits.",
-          book: "Coach",
-        },
-        train: {
-          g: $("#rTrain", svg),
-          x: 960,
-          y: 372,
-          door: -285,
-          r: 8.25,
-          h: 110,
-          rail: true,
-          name: "Railway transfers",
-          text: "Pickups and drops at the station, with a taxi, luxury car or coach ready for the onward leg.",
-          chips: ["Station pickup", "Station drop", "Onward transport"],
-          honk: "Toot toot!",
-          say: "Arriving by train? A car can be waiting outside the station.",
-          book: "Railway transfer",
-        },
-        flight: {
-          g: $("#rPlane", svg),
-          x: 560,
-          y: 250,
-          door: 146,
-          r: 6,
-          h: 142,
-          air: true,
-          name: "Air ticketing",
-          text: "Domestic and international flights, group and corporate bookings, special bulk fares, reissues and cancellations.",
-          chips: ["Domestic", "International", "Group fares", "Reissues"],
-          honk: "Whoosh!",
-          say: "Domestic or international — we book both.",
-          book: "Flights",
-        },
-      };
-
-      Object.values(RIDES).forEach((s) => {
-        if (s.g) gsap.set(s.g, { x: s.rail ? -1500 : -500, y: s.air ? 120 : s.y, autoAlpha: 0 });
-      });
-
-      let current = "vip";
-      let busy = false;
-      let bob: gsap.core.Tween | null = null;
-      const tabs = $$<HTMLButtonElement>('.ride__tabs [role="tab"]');
-      const info = {
-        title: $("[data-ride-title]"),
-        text: $("[data-ride-text]"),
-        chips: $("[data-ride-chips]"),
-        say: $("[data-ride-say]"),
-        book: $<HTMLElement>("[data-ride-book]"),
-      };
-      const goBtn = $<HTMLButtonElement>("#rideGo");
-
-      const bobPlane = (s: RideDef) => {
-        if (bob) bob.kill();
-        if (s.g) bob = gsap.to(s.g, { y: s.y - 10, duration: 1.6, repeat: -1, yoyo: true, ease: "sine.inOut" });
-      };
-
-      const enter = (key: string, toGround = false) => {
-        const s = RIDES[key];
-        if (!s || !s.g) return gsap.timeline();
-        if (s.air) {
-          const ty = toGround ? 472 : s.y;
-          return gsap
-            .timeline()
-            .add(() => gsap.set(s.g, { x: -500, y: 110, autoAlpha: 1 }), 0)
-            .to(s.g, { x: s.x, y: ty, duration: 1.5, ease: "power3.out" }, 0)
-            .add(() => {
-              if (!toGround) bobPlane(s);
-            });
-        }
-        const from = s.rail ? -1500 : -460;
-        const dur = s.rail ? 1.5 : 1.15;
-        const tl = gsap
-          .timeline()
-          .add(() => gsap.set(s.g, { x: from, y: s.y, autoAlpha: 1 }), 0)
-          .to(s.g, { x: s.x, duration: dur, ease: "power3.out" }, 0)
-          .to($$(".wheel", s.g), { rotation: "+=" + deg(s.x - from, s.r), duration: dur, ease: "power3.out" }, 0);
-        if (!s.rail) {
-          tl.to(s.g, { rotation: -1.2, transformOrigin: "50% 100%", duration: 0.14, yoyo: true, repeat: 1, ease: "sine.inOut" }, dur - 0.2);
-        }
-        return tl;
-      };
-
-      const exit = (key: string) => {
-        const s = RIDES[key];
-        if (!s || !s.g) return gsap.timeline();
-        if (bob && s.air) {
-          bob.kill();
-          bob = null;
-        }
-        if (s.air) {
-          return gsap
-            .timeline()
-            .to(s.g, { x: 1700, y: -120, duration: 1.2, ease: "power2.in" })
-            .to($(".plane-body", s.g), { rotation: -8, duration: 0.5 }, 0)
-            .set($(".plane-body", s.g), { rotation: 0 })
-            .set(s.g, { autoAlpha: 0 });
-        }
-        const to = s.rail ? 2900 : 1750;
-        return gsap
-          .timeline()
-          .to(s.g, { x: to, duration: s.rail ? 1.2 : 0.95, ease: "power2.in" }, 0)
-          .to($$(".wheel", s.g), { rotation: "+=" + deg(to - s.x, s.r), duration: s.rail ? 1.2 : 0.95, ease: "power2.in" }, 0)
-          .set(s.g, { autoAlpha: 0 });
-      };
-
-      const showInfo = (key: string) => {
-        const s = RIDES[key];
-        if (!s) return;
-        gsap.to("#rideInfo", {
-          autoAlpha: 0,
-          y: 8,
-          duration: 0.18,
-          onComplete: () => {
-            if (info.title) info.title.textContent = s.name;
-            if (info.text) info.text.textContent = s.text;
-            if (info.chips) info.chips.innerHTML = s.chips.map((c) => `<li>${c}</li>`).join("");
-            if (info.say) info.say.textContent = s.say;
-            if (info.book) info.book.dataset.service = s.book;
-            gsap.to("#rideInfo", { autoAlpha: 1, y: 0, duration: 0.35, ease: "power2.out" });
-          },
-        });
-      };
-
-      info.book?.addEventListener("click", () => {
-        if (info.book?.dataset.service && form) {
-          const serviceSelect = form.elements.namedItem("service") as HTMLSelectElement | null;
-          if (serviceSelect) {
-            serviceSelect.value = info.book.dataset.service;
-            serviceSelect.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
-      });
-
-      const select = (key: string) => {
-        if (busy || key === current) return;
-        busy = true;
-        tabs.forEach((t) => t.setAttribute("aria-selected", String(t.dataset.ride === key)));
-        showInfo(key);
-        const prev = current;
-        current = key;
-        gsap
-          .timeline({
-            onComplete: () => {
-              busy = false;
-              rig.wave(2);
-              rig.talk(1.4);
-            },
-          })
-          .add(exit(prev), 0)
-          .add(enter(key), 0.45);
-      };
-
-      tabs.forEach((t) =>
-        t.addEventListener("click", () => {
-          if (t.dataset.ride) select(t.dataset.ride);
-        })
-      );
-
-      const rideTabsContainer = $(".ride__tabs");
-      rideTabsContainer?.addEventListener("keydown", ((e: KeyboardEvent) => {
-        if (!["ArrowLeft", "ArrowRight"].includes(e.key)) return;
-        const i = tabs.findIndex((t) => t.dataset.ride === current);
-        const n = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
-        n.focus();
-        if (n.dataset.ride) select(n.dataset.ride);
-      }) as EventListener);
-
-      const doHonk = (key: string) => {
-        const s = RIDES[key];
-        if (busy || !s || !s.g || !honk || !honkText) return;
-        honkText.textContent = s.honk;
-        const y = (s.air ? (gsap.getProperty(s.g, "y") as number) : s.y) - s.h - 24;
-        gsap.killTweensOf(honk);
-        gsap
-          .timeline()
-          .set(honk, { x: s.x + (s.rail ? -200 : 0), y, scale: 0.4, opacity: 0, transformOrigin: "50% 100%" })
-          .to(honk, { scale: 1, opacity: 1, duration: 0.35, ease: "back.out(2.4)" })
-          .to(honk, { opacity: 0, y: y - 16, duration: 0.3 }, 1.2);
-        if (!s.air) {
-          gsap.fromTo(s.g, { y: s.y }, { y: s.y - 7, duration: 0.1, yoyo: true, repeat: 3, ease: "sine.inOut" });
-        } else {
-          gsap.to($(".plane-body", s.g), { rotation: -6, duration: 0.2, yoyo: true, repeat: 1 });
-        }
-        gsap.fromTo($$(".hl", s.g), { opacity: 1 }, { opacity: 0.2, duration: 0.1, repeat: 5, yoyo: true });
-        rig.jump();
-        rig.happy(0.9);
-      };
-
-      Object.entries(RIDES).forEach(([key, s]) => {
-        if (!s.g) return;
-        s.g.addEventListener("click", () => {
-          if (key === current) doHonk(key);
-        });
-        s.g.addEventListener("keydown", (e: Event) => {
-          const ke = e as KeyboardEvent;
-          if ((ke.key === "Enter" || ke.key === " ") && key === current) {
-            ke.preventDefault();
-            doHonk(key);
-          }
-        });
-      });
-
-      // Send Nila for a ride
-      goBtn?.addEventListener("click", () => {
-        if (busy || !goBtn) return;
-        busy = true;
-        goBtn.disabled = true;
-        const s = RIDES[current];
-        if (!s || !s.g) return;
-        const mini = s.air ? $(".porthole", s.g) : $(".mini-wrap", s.g);
-        const doorX = s.x + s.door;
-        const tl = gsap.timeline({
-          onComplete: () => {
-            busy = false;
-            goBtn.disabled = false;
-          },
-        });
-        if (s.air) {
-          if (bob) {
-            bob.kill();
-            bob = null;
-          }
-          tl.to(s.g, { y: 472, duration: 1, ease: "power2.inOut" });
-        }
-        tl.add(() => rig.walk(true))
-          .to(nilaG, {
-            x: doorX,
-            y: s.rail ? 384 : HOME.y,
-            scale: s.rail ? 0.82 : 1,
-            duration: Math.abs(HOME.x - doorX) / 330,
-            ease: "power1.inOut",
-          })
-          .add(() => rig.walk(false))
-          .to(nilaG, { autoAlpha: 0, scale: "-=0.15", duration: 0.2 })
-          .to(mini, { autoAlpha: 1, duration: 0.2 })
-          .add(() => {
-            if (!s.air && mini) gsap.to($(".mini-hand", mini), { rotation: -32, duration: 0.12, repeat: 9, yoyo: true });
-          })
-          .add(exit(current), "+=0.2")
-          .add(() => {
-            gsap.set(mini, { autoAlpha: 1 });
-            if (s.air && mini) gsap.to($(".mini-hand", mini), { rotation: -32, duration: 0.12, repeat: 9, yoyo: true });
-          })
-          .add(enter(current, true), "+=0.5")
-          .to(mini, { autoAlpha: 0, duration: 0.2 }, "+=0.15")
-          .set(nilaG, { x: doorX, autoAlpha: 1, scale: s.rail ? 0.82 : 1 })
-          .add(() => rig.walk(true))
-          .to(nilaG, { x: HOME.x, y: HOME.y, scale: 1, duration: Math.abs(HOME.x - doorX) / 330, ease: "power1.inOut" })
-          .add(() => {
-            rig.walk(false);
-            rig.wave(3);
-            rig.talk(1.4);
-            if (info.say) info.say.textContent = "Back already! Pick another ride.";
-          });
-        if (s.air) {
-          tl.add(() => {
-            gsap.to(s.g, { y: s.y, duration: 1.2, ease: "power2.inOut", onComplete: () => bobPlane(s) });
-          });
-        }
-      });
-
-      // first vehicle arrives when the section is reached
-      ScrollTrigger.create({
-        trigger: "#ride",
-        start: "top 70%",
-        once: true,
-        onEnter: () => {
-          busy = true;
-          enter("vip").eventCallback("onComplete", () => {
-            busy = false;
-            rig.wave(2);
-          });
-        },
-      });
-    });
-
-    /* ==================================================================
        DOCUMENTS — stamp the passport
        ================================================================== */
+    
     safe("docs", () => {
       const svg = $("#passport svg");
       if (!svg) return;
@@ -1178,20 +879,24 @@ export function useSiteAnimations() {
         const x = +(st.dataset.x || 0);
         const y = +(st.dataset.y || 0);
         const r = +(st.dataset.rot || 0);
-        gsap
+        const tl = gsap
           .timeline({
             onComplete: () => {
               busy = false;
             },
           })
           .set(stamper, { x, y: y - 130, opacity: 1 })
-          .to(stamper, { y: y + 6, duration: 0.26, ease: "power3.in" })
-          .fromTo(
-            st,
-            { opacity: 0, scale: 1.25, rotation: r - 8, x, y },
-            { opacity: 0.92, scale: 1, rotation: r, duration: 0.12, ease: "power2.out" }
-          )
-          .to(pp, { y: 3, duration: 0.06, yoyo: true, repeat: 1 }, "<")
+          .to(stamper, { y: y + 6, duration: 0.26, ease: "power3.in" });
+        const stampTween = playStamp(st, {
+          x,
+          y,
+          rotation: r,
+          finalOpacity: 0.92,
+          duration: 0.12,
+          ease: "power2.out",
+        });
+        if (stampTween) tl.add(stampTween);
+        tl.to(pp, { y: 3, duration: 0.06, yoyo: true, repeat: 1 }, "<")
           .to(stamper, { y: y - 140, duration: 0.38, ease: "power2.out" }, "+=0.06")
           .to(stamper, { opacity: 0, duration: 0.2 });
         i++;
@@ -1265,58 +970,6 @@ export function useSiteAnimations() {
     });
 
     /* ==================================================================
-       STRENGTH — odometer rolls to 20,00,000 km
-       ================================================================== */
-    safe("odometer", () => {
-      const el = $<HTMLElement>("[data-odo]");
-      if (!el) return;
-      const target = +(el.dataset.odo || 0);
-      const digits = String(target).length;
-      const sep = new Set<number>();
-      for (let pos = 3; pos < digits; pos += 2) sep.add(digits - pos);
-      el.innerHTML = "";
-      const strips: HTMLElement[] = [];
-      for (let i = 0; i < digits; i++) {
-        if (sep.has(i)) el.insertAdjacentHTML("beforeend", '<span class="odo__sep">,</span>');
-        const col = document.createElement("span");
-        col.className = "odo__col";
-        const strip = document.createElement("span");
-        strip.className = "odo__strip";
-        strip.innerHTML = "01234567890"
-          .split("")
-          .map((n) => `<span>${n}</span>`)
-          .join("");
-        col.appendChild(strip);
-        el.appendChild(col);
-        strips.push(strip);
-      }
-      const o = { v: reduce ? target : 0 };
-      const render = () =>
-        strips.forEach((strip, idx) => {
-          const place = digits - 1 - idx;
-          const p = o.v / Math.pow(10, place);
-          let pos: number;
-          if (place === 0) pos = p % 10;
-          else {
-            const d = Math.floor(p) % 10;
-            const f = p - Math.floor(p);
-            pos = d + (f > 0.9 ? (f - 0.9) / 0.1 : 0);
-          }
-          strip.style.transform = `translate3d(0, ${-(pos / 11) * 100}%, 0)`;
-        });
-      render();
-      if (!reduce) {
-        gsap.to(o, {
-          v: target,
-          duration: 3,
-          ease: "power3.out",
-          onUpdate: render,
-          scrollTrigger: { trigger: el, start: "top 82%", once: true },
-        });
-      }
-    });
-
-    /* ==================================================================
        Shared reveals
        ================================================================== */
     safe("reveals", () => {
@@ -1340,7 +993,7 @@ export function useSiteAnimations() {
 
       // Key content elements across sections
       const revealSelector =
-        ".sec .eyebrow, .sec .lede, .trust__item, .doclist li, .hcard, .ccard, .events__grid > *, .film__items > div, .facts > div, .contact-list li";
+        ".sec .eyebrow, .sec .lede, .doclist li, .hcard, .ccard, .events__grid > *, .film__items > div, .facts > div, .contact-list li";
       const revealEls = $$<HTMLElement>(revealSelector);
 
       revealEls.forEach((el) => {

@@ -74,7 +74,7 @@ export default function EventsSection() {
               style={{ fontSize: "clamp(26px,3.2vw,48px)" }}
               data-split
             >
-              ·rtists, crew <span className="serif-i">and the whole unit.</span>
+              Artists, crew <span className="serif-i">and the whole unit.</span>
             </h2>
             <div className="film__items">
               <div>
