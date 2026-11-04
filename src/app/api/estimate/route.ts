@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { SERVER_FARE_RATES, mapVehicleToFareCategory } from "@/server/data/fareRates";
 import { getFallbackRouteDistance } from "@/server/data/routes";
+import { PLACE_ALIASES } from "@/data/placeAliases";
 
 const NIGHT_SLOTS = ["6–9 PM", "9 PM–12 AM", "12–4 AM"];
 
@@ -25,6 +26,87 @@ function haversineDistanceKm(lat1: number, lon1: number, lat2: number, lon2: num
   return R * c;
 }
 
+interface Coords {
+  lat: number;
+  lng: number;
+}
+
+function resolvePlaceCoords(
+  place: unknown,
+  placeName: string,
+  extraCoords?: unknown
+): Coords | null {
+  if (Array.isArray(extraCoords) && extraCoords.length >= 2) {
+    const [c1, c2] = extraCoords;
+    if (typeof c1 === "number" && typeof c2 === "number") {
+      // In GeoJSON / OSRM convention [lng, lat]
+      if (c1 > 40 && c2 <= 40) return { lng: c1, lat: c2 };
+      // In [lat, lng] convention
+      if (c2 > 40 && c1 <= 40) return { lng: c2, lat: c1 };
+      return { lng: c1, lat: c2 };
+    }
+  }
+
+  if (
+    place &&
+    typeof place === "object" &&
+    "lat" in place &&
+    "lng" in place &&
+    typeof (place as Coords).lat === "number" &&
+    typeof (place as Coords).lng === "number" &&
+    (place as Coords).lat !== 0 &&
+    (place as Coords).lng !== 0
+  ) {
+    return { lat: (place as Coords).lat, lng: (place as Coords).lng };
+  }
+
+  const query = (placeName || "").toLowerCase().trim();
+  if (!query) return null;
+
+  // Search local place database
+  const match = PLACE_ALIASES.find((p) => {
+    const pName = p.name.toLowerCase();
+    const pId = p.id.toLowerCase();
+    if (query === pName || query === pId) return true;
+    if (p.aliases.some((a) => query === a.toLowerCase())) return true;
+    if (query.includes(pName) || pName.includes(query)) return true;
+    return false;
+  });
+
+  if (match && match.lat && match.lng) {
+    return { lat: match.lat, lng: match.lng };
+  }
+
+  return null;
+}
+
+async function fetchOsrmDistance(
+  fromLng: number,
+  fromLat: number,
+  toLng: number,
+  toLat: number
+): Promise<number | null> {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2500);
+    const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${fromLng},${fromLat};${toLng},${toLat}?overview=false`;
+    const res = await fetch(osrmUrl, {
+      signal: controller.signal,
+      headers: { "User-Agent": "SahiTravels-BookingApp/1.0" },
+    });
+    clearTimeout(timeout);
+    if (res.ok) {
+      const data = await res.json();
+      if (data?.routes?.[0]?.distance) {
+        return Math.round(data.routes[0].distance / 1000);
+      }
+    }
+  } catch {
+    // Graceful fallback
+  }
+  return null;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -32,6 +114,12 @@ export async function POST(req: NextRequest) {
       tripType,
       from,
       to,
+      pickup,
+      drop,
+      fromCoords: bodyFromCoords,
+      toCoords: bodyToCoords,
+      pickupCoords,
+      dropCoords,
       travelDate,
       returnDate,
       timeSlot,
@@ -39,10 +127,13 @@ export async function POST(req: NextRequest) {
       vehicleCategory,
     } = body;
 
-    const fromName = typeof from === "string" ? from.trim() : from?.name?.trim() || "";
-    const toName = typeof to === "string" ? to.trim() : to?.name?.trim() || "";
-    const fromCountry = typeof from === "object" ? from?.countryCode || "IN" : "IN";
-    const toCountry = typeof to === "object" ? to?.countryCode || "IN" : "IN";
+    const fromInput = from ?? pickup;
+    const toInput = to ?? drop;
+
+    const fromName = typeof fromInput === "string" ? fromInput.trim() : fromInput?.name?.trim() || "";
+    const toName = typeof toInput === "string" ? toInput.trim() : toInput?.name?.trim() || "";
+    const fromCountry = typeof fromInput === "object" ? fromInput?.countryCode || "IN" : "IN";
+    const toCountry = typeof toInput === "object" ? toInput?.countryCode || "IN" : "IN";
 
     if (!fromName || !toName) {
       return NextResponse.json({
@@ -61,12 +152,16 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Resolve coordinates for accurate road routing
+    const fromCoords = resolvePlaceCoords(fromInput, fromName, bodyFromCoords ?? pickupCoords);
+    const toCoords = resolvePlaceCoords(toInput, toName, bodyToCoords ?? dropCoords);
+
     // Rule 2.b: If both places in India and in same city (same normalized name, or distance < 5 km)
     const normFromName = fromName.toLowerCase().replace(/ airport.*$/i, "").trim();
     const normToName = toName.toLowerCase().replace(/ airport.*$/i, "").trim();
     let straightLineDist: number | null = null;
-    if (typeof from === "object" && typeof to === "object" && from.lat && to.lat) {
-      straightLineDist = haversineDistanceKm(from.lat, from.lng, to.lat, to.lng);
+    if (fromCoords && toCoords) {
+      straightLineDist = haversineDistanceKm(fromCoords.lat, fromCoords.lng, toCoords.lat, toCoords.lng);
     }
 
     if (
@@ -80,35 +175,39 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Rule 2.c: Road distance routing with fallback
-    let distance: number | null = null;
+    // Rule 2.c: Actual road distance routing via OSRM with fallback
+    let distance: number | null = null; // Outbound distance
+    let returnDistance: number | null = null; // Return distance for round trips
     let distanceSource = "fallback";
 
-    // Attempt routing provider if coordinates available
-    if (typeof from === "object" && typeof to === "object" && from.lat && from.lng && to.lat && to.lng) {
-      try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 1600);
-        const osrmUrl = `http://router.project-osrm.org/route/v1/driving/${from.lng},${from.lat};${to.lng},${to.lat}?overview=false`;
-        const osrmRes = await fetch(osrmUrl, { signal: controller.signal });
-        clearTimeout(timeout);
-        if (osrmRes.ok) {
-          const osrmData = await osrmRes.json();
-          if (osrmData?.routes?.[0]?.distance) {
-            distance = Math.round(osrmData.routes[0].distance / 1000);
-            distanceSource = "osrm";
-          }
+    const tripTypeNorm = (tripType || "").toString().toLowerCase().trim();
+    const isRoundTrip =
+      tripTypeNorm === "round trip" ||
+      tripTypeNorm === "round" ||
+      tripTypeNorm === "round-trip" ||
+      tripTypeNorm === "roundtrip";
+
+    // Attempt real road routing when coordinates available
+    if (fromCoords && toCoords) {
+      distance = await fetchOsrmDistance(fromCoords.lng, fromCoords.lat, toCoords.lng, toCoords.lat);
+      if (distance !== null) {
+        distanceSource = "osrm";
+        if (isRoundTrip) {
+          // Calculate return road distance if route differs
+          const retDist = await fetchOsrmDistance(toCoords.lng, toCoords.lat, fromCoords.lng, fromCoords.lat);
+          returnDistance = retDist !== null ? retDist : distance;
         }
-      } catch {
-        // Fallback to table
       }
     }
 
-    // If OSRM didn't resolve or was not used, use the fallback table
-    const fallbackDist = getFallbackRouteDistance(fromName, toName);
-    if (fallbackDist !== null) {
-      distance = fallbackDist;
-      distanceSource = "table";
+    // If OSRM didn't resolve or was unavailable, use fallback table
+    if (distance === null) {
+      const fallbackDist = getFallbackRouteDistance(fromName, toName);
+      if (fallbackDist !== null) {
+        distance = fallbackDist;
+        returnDistance = isRoundTrip ? fallbackDist : null;
+        distanceSource = "table";
+      }
     }
 
     if (!distance) {
@@ -123,8 +222,7 @@ export async function POST(req: NextRequest) {
     const categoryKey = mapVehicleToFareCategory(vehicleCategory || vehicleId || "Sedan");
     const rate = SERVER_FARE_RATES[categoryKey] || SERVER_FARE_RATES["Sedan"];
 
-    // Rule 2.d: Totals
-    const isRoundTrip = tripType === "Round trip";
+    // Rule 2.d: Pricing calculations
     let days = 1;
     if (isRoundTrip) {
       if (travelDate && returnDate) {
@@ -138,10 +236,16 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const totalKm = isRoundTrip ? distance * 2 : distance;
-    const billableKm = Math.max(totalKm, rate.minKmPerDay * days);
-
-    const distanceCharge = billableKm * rate.ratePerKm;
+    const totalKm = isRoundTrip
+      ? distance + (returnDistance ?? distance)
+      : distance;
+    // Strictly follow required fare formula:
+    // Total Distance = Outbound Distance + Return Distance
+    // Distance Charge = Total Distance × Applicable Vehicle Rate Per Kilometer
+    // Estimated Total = Distance Charge
+    // Do not include driver batta/allowance or artificial minKmPerDay multipliers in the displayed estimate
+    const billableKm = totalKm;
+    const distanceCharge = Math.round(totalKm * rate.ratePerKm);
     const driverBatta = rate.driverBattaPerDay * days;
 
     const isNight = isNightSlot(timeSlot);
@@ -152,19 +256,30 @@ export async function POST(req: NextRequest) {
       nightAllowance = rate.nightAllowancePerNight * nights;
     }
 
-    const total = Math.round(distanceCharge + driverBatta + nightAllowance);
+    // Displayed estimate total is based strictly on the applicable distance charge
+    const total = distanceCharge;
+
+    const distanceText = isRoundTrip
+      ? `About ${totalKm} km road trip (${distance} km outbound + ${returnDistance ?? distance} km return)`
+      : `About ${distance} km by road`;
 
     return NextResponse.json({
       type: "calculated",
       total,
+      estimatedFare: total,
+      tripType: isRoundTrip ? "round" : "one-way",
       distance,
-      distanceText: `About ${distance} km by road`,
+      distanceKm: distance,
+      returnDistance: isRoundTrip ? returnDistance : undefined,
+      returnDistanceKm: isRoundTrip ? returnDistance : undefined,
+      distanceText,
       distanceSource,
       totalKm,
       billableKm,
       days,
       nights,
       categoryKey,
+      ratePerKm: rate.ratePerKm,
       distanceCharge,
       driverBatta,
       nightAllowance,

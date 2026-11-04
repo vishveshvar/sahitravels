@@ -25,20 +25,19 @@ export default function JourneySection() {
         <div className="journey__cards">
           <article className="jcard">
             <p className="jcard__step mono">Step 1 of 6 · Taxi</p>
-            <h3>Taxi &amp; airport transfers</h3>
+            <h3>Chauffeur-Driven Mobility</h3>
             <p>
-              Local and outstation taxis, one-way and round trips, airport and
-              railway transfers, chauffeur-driven.
+              Seamless airport transfers, railway pickups, local commutes, and intercity trips with zero delays and total comfort.
             </p>
             <ul className="chips">
-              <li>·irport</li>
+              <li>Airport</li>
               <li>Railway</li>
               <li>Outstation</li>
             </ul>
           </article>
           <article className="jcard">
             <p className="jcard__step mono">Step 2 of 6 · Flight</p>
-            <h3>·ir ticketing</h3>
+            <h3>Air ticketing</h3>
             <p>
               Domestic and international flights, group and corporate bookings,
               bulk fares, reissues and cancellations.

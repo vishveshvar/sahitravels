@@ -19,6 +19,12 @@ const items = [
     link: "#",
     alt: "Two professionals shaking hands across a desk",
   },
+  {
+    image: "/assets/img/medical tourism.png",
+    label: "Medical tourism",
+    link: "#",
+    alt: "Medical consultations and healthcare travel support",
+  },
 ];
 
 export default function CorporateSection() {
@@ -79,6 +85,12 @@ export default function CorporateSection() {
             <h3 className="travel-desks-title">B2B travel services</h3>
             <p className="travel-desks-desc">
               B2B flight ticketing and group fares, hotel and transport B2B, tour packages, travel-agent support and wholesale solutions.
+            </p>
+          </div>
+          <div className="travel-desks-col">
+            <h3 className="travel-desks-title">Medical journeys, thoughtfully arranged.</h3>
+            <p className="travel-desks-desc">
+              Travel support for medical consultations, treatments and wellness journeys. From flights and accommodation to local transfers and travel coordination, our team helps arrange the essentials for a smoother experience.
             </p>
           </div>
         </div>

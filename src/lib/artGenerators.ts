@@ -9,7 +9,8 @@
     navy: '#1E2B4F', navy2: '#2A3A66', glass: '#2F4573', glassL: '#CFE3F5', glassT: '#3A5283',
     skin: '#A8704A', skinS: '#8E5A38', hair: '#1B1A26', apricot: '#F08A4B', apricotD: '#D9703A',
     sand: '#D9C6A5', sandS: '#C4AE89', gold: '#E2B34B', lip: '#7A2E2A', blush: '#E9846C',
-    line: '#CBD4E1', tire: '#1F2433', hub: '#DCE3EC', shade: '#E7ECF3', hl: '#FFD27A', tail: '#EF6B5B'
+    line: '#CBD4E1', tire: '#1F2433', hub: '#DCE3EC', shade: '#E7ECF3', hl: '#FFD27A', tail: '#EF6B5B',
+    terracotta: '#C75A3A'
   };
   const PAX = [['#C68B5E', '#2B2233', '#7CC6B8'], ['#8E5A38', '#1B1A26', '#F2B880'], ['#E0B08A', '#5B3A29', '#9DB4E8'], ['#A8704A', '#1B1A26', '#E9A3B4'], ['#6E4630', '#1B1A26', '#B9D88F'], ['#D9A27A', '#3A2A20', '#F7D57A']];
 
@@ -71,6 +72,77 @@
     <g class="n-armR">
       <path d="M60 110L54 156" stroke="${C.navy}" stroke-width="13" stroke-linecap="round"/>
       <g class="n-foreR"><path d="M54 156L52 196" stroke="${C.navy}" stroke-width="12" stroke-linecap="round"/><circle cx="52" cy="202" r="6.5" fill="${C.skin}"/></g>
+    </g>
+  </g>
+</g>`;
+  }
+
+  // Sahi Travels Welcome Representative, full body cartoon character. Coordinates: 170 × 360, feet at y≈356.
+  function repRig() {
+    return `
+<g class="r-root">
+  <g class="r-legL">
+    <path d="M65 194H85L83 346H67Z" fill="${C.navy}"/>
+    <ellipse cx="74" cy="351" rx="11.5" ry="5.5" fill="#151C2C"/>
+  </g>
+  <g class="r-legR">
+    <path d="M85 194H105L103 346H87Z" fill="${C.navy}"/>
+    <path d="M86.2 202L87.6 344" stroke="#33466F" stroke-width="1.6"/>
+    <ellipse cx="96" cy="351" rx="11.5" ry="5.5" fill="#151C2C"/>
+  </g>
+  <g class="r-upper">
+    <rect x="79" y="82" width="12" height="22" rx="5" fill="${C.skinS}"/>
+    <path d="M56 114Q58 103 72 100H98Q112 103 114 114L112 206Q85 212 58 206Z" fill="${C.navy}"/>
+    <path d="M74 100L85 132L96 100Z" fill="#fff"/>
+    <path d="M74 100L85 132L78 148L66 106Z" fill="${C.navy2}"/>
+    <path d="M96 100L85 132L92 148L104 106Z" fill="${C.navy2}"/>
+    <path d="M82 106L88 106L90 128L85 142L80 128Z" fill="${C.terracotta}"/>
+    <path d="M82 103H88V108H82Z" fill="${C.apricotD}"/>
+    <rect x="63" y="122" width="12" height="6" rx="1.5" fill="${C.gold}" stroke="#B88225" stroke-width="0.6"/>
+    <circle cx="85" cy="162" r="2.2" fill="${C.gold}"/><circle cx="85" cy="179" r="2.2" fill="${C.gold}"/>
+    
+    <g class="r-armL">
+      <path d="M112 110L122 154" stroke="${C.navy}" stroke-width="13" stroke-linecap="round"/>
+      <g class="r-foreL">
+        <path d="M122 154L112 188" stroke="${C.navy}" stroke-width="12" stroke-linecap="round"/>
+        <circle cx="110" cy="192" r="6.5" fill="${C.skin}"/>
+        <g class="r-board" transform="translate(108 175) rotate(-8)">
+          <rect x="-8" y="-30" width="46" height="58" rx="5" fill="#FAF6F2" stroke="${C.terracotta}" stroke-width="1.8"/>
+          <rect x="-5" y="-27" width="40" height="12" rx="3" fill="${C.navy}"/>
+          <text x="15" y="-19" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="5" font-weight="700" letter-spacing="0.8" fill="${C.gold}">SAHI</text>
+          <text x="15" y="-3" text-anchor="middle" font-family="Archivo, sans-serif" font-size="5.5" font-weight="700" letter-spacing="0.5" fill="${C.navy}">ARRIVAL</text>
+          <text x="15" y="8" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-size="7.5" font-style="italic" font-weight="600" fill="${C.terracotta}">Welcome</text>
+          <line x1="-2" y1="14" x2="32" y2="14" stroke="${C.line}" stroke-width="0.8" stroke-dasharray="2 1.5"/>
+          <circle cx="15" cy="21" r="2" fill="${C.gold}"/>
+        </g>
+      </g>
+    </g>
+
+    <g class="r-head">
+      <path d="M60 60Q58 24 85 22Q112 24 110 60Q110 72 105 78H65Q60 72 60 60Z" fill="${C.hair}"/>
+      <ellipse cx="64.5" cy="62" rx="3.6" ry="5.2" fill="${C.skinS}"/><ellipse cx="105.5" cy="62" rx="3.6" ry="5.2" fill="${C.skinS}"/>
+      <ellipse cx="85" cy="60" rx="20" ry="23.5" fill="${C.skin}"/>
+      <path d="M63 52Q64 28 85 27Q107 28 107 48Q98 38 84 39Q70 40 63 52Z" fill="${C.hair}"/>
+      <path d="M84 39Q92 46 95 52" stroke="${C.hair}" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M71 49Q75.5 46.5 80 49M90 49Q94.5 46.5 99 49" stroke="${C.hair}" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <g class="r-eyes">
+        <ellipse cx="76" cy="58.5" rx="2.4" ry="3.1" fill="${C.hair}"/>
+        <ellipse cx="94" cy="58.5" rx="2.4" ry="3.1" fill="${C.hair}"/>
+        <circle cx="76.8" cy="57.3" r=".9" fill="#fff"/>
+        <circle cx="94.8" cy="57.3" r=".9" fill="#fff"/>
+      </g>
+      <path d="M85 61Q83.4 66 86 67.2" stroke="${C.skinS}" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+      <circle cx="70.5" cy="66.5" r="3.6" fill="${C.blush}" opacity=".35"/><circle cx="99.5" cy="66.5" r="3.6" fill="${C.blush}" opacity=".35"/>
+      <path class="r-mouth" d="M78.5 71Q85 76.5 91.5 71" stroke="${C.lip}" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <ellipse class="r-mouthO" cx="85" cy="72.6" rx="3.6" ry="2.8" fill="${C.lip}" opacity="0"/>
+    </g>
+
+    <g class="r-armR">
+      <path d="M58 110L50 154" stroke="${C.navy}" stroke-width="13" stroke-linecap="round"/>
+      <g class="r-foreR">
+        <path d="M50 154L44 194" stroke="${C.navy}" stroke-width="12" stroke-linecap="round"/>
+        <circle cx="43" cy="199" r="6.5" fill="${C.skin}"/>
+      </g>
     </g>
   </g>
 </g>`;
@@ -259,7 +331,17 @@
       <path d="M3338 616Q3680 556 4022 616" stroke="#AFC3DA" stroke-width="12" fill="none" stroke-linecap="round"/>
       ${Array.from({ length: 16 }, (_, i) => `<path d="M${3378 + i * 40} 632V716" stroke="#DCE6F1" stroke-width="2"/>`).join('')}
       <rect x="3350" y="666" width="660" height="3" fill="#DCE6F1"/>
-      <text x="3680" y="652" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="19" letter-spacing="6" fill="${C.navy}">MAA · CHENNAI</text>`;
+      <text x="3680" y="652" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="19" letter-spacing="6" fill="${C.navy}">MAA · CHENNAI</text>
+      <!-- Destination runway threshold and runway centerlines -->
+      ${Array.from({ length: 9 }, (_, i) => `<rect x="4740" y="${738 + i * 8}" width="30" height="5" fill="#fff" opacity=".92"/>`).join('')}
+      ${Array.from({ length: 14 }, (_, i) => `<rect x="${4820 + i * 88}" y="774" width="56" height="5.5" rx="2" fill="#fff" opacity=".9"/>`).join('')}
+      <!-- Destination Arrivals Terminal -->
+      <rect x="5250" y="605" width="720" height="115" rx="6" fill="#F7FAFE" stroke="#D3DEEA" stroke-width="2"/>
+      <path d="M5238 611Q5610 548 5982 611" stroke="#AFC3DA" stroke-width="12" fill="none" stroke-linecap="round"/>
+      ${Array.from({ length: 18 }, (_, i) => `<path d="M${5278 + i * 40} 628V716" stroke="#DCE6F1" stroke-width="2"/>`).join('')}
+      <rect x="5250" y="666" width="720" height="3" fill="#DCE6F1"/>
+      <rect x="5460" y="626" width="300" height="28" rx="6" fill="${C.navy}"/>
+      <text x="5610" y="645" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14.5" font-weight="600" letter-spacing="4" fill="#fff">DESTINATION · ARRIVALS</text>`;
     const ax = 10560;
     let flowers = '';
     const fc = ['#F4A7B4', '#fff', '#F7C6A3', '#F08A4B'];
@@ -292,6 +374,26 @@
       <g id="jCoach">${vCoach('jco')}</g>
       <g id="jMpv">${vMpv('jmp')}</g>
       <g id="jNila">${nilaShadow(0, 0, 14)}<g transform="scale(.28) translate(-85 -356)">${nilaRig()}</g></g>
+      <!-- Cartoon Characters: Arriving Passenger (Nila with suitcase) & Sahi Travels Welcome Representative -->
+      <g id="jPassenger" opacity="0" pointer-events="none">
+        <ellipse cx="0" cy="0" rx="20" ry="4" fill="#0F1B33" opacity="0.12"/>
+        <g transform="scale(.32) translate(-85 -356)">
+          ${nilaRig()}
+        </g>
+      </g>
+      <g id="jRepresentative" opacity="0" pointer-events="none">
+        <ellipse cx="0" cy="0" rx="20" ry="4" fill="#0F1B33" opacity="0.12"/>
+        <g transform="scale(.32) translate(-85 -356)">
+          ${repRig()}
+        </g>
+      </g>
+      <g id="jWelcome" opacity="0" pointer-events="none">
+        <rect x="-240" y="-64" width="480" height="128" rx="24" fill="#FAF6F2" stroke="#C75A3A" stroke-width="2.4" filter="drop-shadow(0 16px 36px rgba(58,15,52,0.18))"/>
+        <rect x="-234" y="-58" width="468" height="116" rx="18" fill="none" stroke="#C9A0A7" stroke-width="1" stroke-dasharray="5 3"/>
+        <text x="0" y="-30" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" letter-spacing="2.2" fill="#C75A3A">SAHI TRAVELS · ARRIVAL DESK</text>
+        <text x="0" y="6" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-size="29" font-style="italic" font-weight="600" fill="#3A0F34">Welcome to your destination.</text>
+        <text x="0" y="33" text-anchor="middle" font-family="Archivo, sans-serif" font-size="13.5" font-weight="500" fill="#73566F">Your flight has landed. We’re delighted to welcome you.</text>
+      </g>
       <g id="jPetals">${petals}</g>
     </svg>`;
   }

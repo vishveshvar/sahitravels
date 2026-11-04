@@ -29,6 +29,10 @@ export type EstimateResult =
       days: number;
       nights: number;
       distanceText?: string;
+      distance?: number;
+      returnDistance?: number;
+      totalKm?: number;
+      ratePerKm?: number;
       indicative?: boolean;
     }
   | {
@@ -172,9 +176,14 @@ export default function BookingWizard() {
     setErrors({});
   }
 
-  // Move focus to heading when screenIndex changes
+  // Move focus to heading when screenIndex changes (skip initial mount to avoid stealing scroll)
+  const isFirstMount = useRef(true);
   useEffect(() => {
-    headingRef.current?.focus();
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      return;
+    }
+    headingRef.current?.focus({ preventScroll: true });
   }, [screenIndex]);
 
   // Selected Vehicle Object
@@ -1265,24 +1274,10 @@ export default function BookingWizard() {
                     <div className="bf-estimate-card__breakdown">
                       <div className="bf-estimate-card__row">
                         <span className="bf-estimate-card__row-label">
-                          Distance charge ({estimateData.billableKm} km)
+                          Distance charge ({estimateData.totalKm || estimateData.billableKm} km)
                         </span>
                         <span>₹{estimateData.distanceCharge.toLocaleString("en-IN")}</span>
                       </div>
-                      <div className="bf-estimate-card__row">
-                        <span className="bf-estimate-card__row-label">
-                          Driver batta ({estimateData.days} {estimateData.days === 1 ? "day" : "days"})
-                        </span>
-                        <span>₹{estimateData.driverBatta.toLocaleString("en-IN")}</span>
-                      </div>
-                      {estimateData.nightAllowance > 0 && (
-                        <div className="bf-estimate-card__row">
-                          <span className="bf-estimate-card__row-label">
-                            Night allowance ({estimateData.nights} {estimateData.nights === 1 ? "night" : "nights"})
-                          </span>
-                          <span>₹{estimateData.nightAllowance.toLocaleString("en-IN")}</span>
-                        </div>
-                      )}
                     </div>
 
                     <p className="bf-estimate-card__disclaimer">

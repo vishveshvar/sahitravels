@@ -16,31 +16,51 @@ export default function Footer() {
             Plan a trip <span className="btn__arrow" aria-hidden="true">→</span>
           </a>
         </div>
-        <div className="footer__cols">
-          <div>
-            <h3 className="mono">Contact</h3>
-            <a data-contact="phone" href={CONTACT_DETAILS.phone.telLink}>
-              {CONTACT_DETAILS.phone.display}
-            </a>
-            <a data-contact="whatsapp" href={CONTACT_DETAILS.whatsapp.link} target="_blank" rel="noopener">
-              {CONTACT_DETAILS.whatsapp.label}
-            </a>
-            <a data-contact="email" href={CONTACT_DETAILS.email.mailtoLink}>
-              {CONTACT_DETAILS.email.address}
-            </a>
-            <a data-contact="website" href={CONTACT_DETAILS.website.url} target="_blank" rel="noopener">
-              {CONTACT_DETAILS.website.display}
-            </a>
+
+        <div className="footer__layout">
+          {/* LEFT SIDE: Contact & Explore */}
+          <div className="footer__left-side">
+            <div className="footer__block">
+              <h3 className="mono">Contact</h3>
+              <a data-contact="phone" href={CONTACT_DETAILS.phone.telLink}>
+                {CONTACT_DETAILS.phone.display}
+              </a>
+              <a data-contact="whatsapp" href={CONTACT_DETAILS.whatsapp.link} target="_blank" rel="noopener">
+                {CONTACT_DETAILS.whatsapp.label}
+              </a>
+              <a data-contact="email" href={CONTACT_DETAILS.email.mailtoLink}>
+                {CONTACT_DETAILS.email.address}
+              </a>
+              <a data-contact="website" href={CONTACT_DETAILS.website.url} target="_blank" rel="noopener">
+                {CONTACT_DETAILS.website.display}
+              </a>
+            </div>
+
+            <div className="footer__block">
+              <h3 className="mono">Explore</h3>
+              <a href="#journey">The journey</a>
+              <a href="#ride">Taxis, cars, coaches &amp; flights</a>
+              <a href="#docs">Visas &amp; passports</a>
+              <a href="#holidays">Holidays &amp; pilgrimage</a>
+              <a href="#events">Events &amp; film</a>
+            </div>
           </div>
-          <div>
-            <h3 className="mono">Explore</h3>
-            <a href="#journey">The journey</a>
-            <a href="#ride">Taxis, cars, coaches &amp; flights</a>
-            <a href="#docs">Visas &amp; passports</a>
-            <a href="#holidays">Holidays &amp; pilgrimage</a>
-            <a href="#events">Events &amp; film</a>
+
+          {/* RIGHT SIDE: Our Offices */}
+          <div className="footer__right-side">
+            <div className="footer__block footer__block--offices">
+              <h3 className="mono">Our offices</h3>
+              <ul className="footer__office-list" aria-label="Our office locations">
+                <li>Chennai</li>
+                <li>Dubai</li>
+                <li>Bangkok</li>
+                <li>Brunei</li>
+                <li>Trichy</li>
+              </ul>
+            </div>
           </div>
         </div>
+
         <p className="footer__word display" aria-hidden="true">
           Sahi Travels
         </p>
@@ -54,4 +74,3 @@ export default function Footer() {
     </footer>
   );
 }
-

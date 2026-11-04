@@ -261,7 +261,7 @@ export function useSiteAnimations() {
           "braid",
           "case",
         ].forEach((k) => {
-          P[k] = scope.querySelector<SVGGraphicsElement>(".n-" + k);
+          P[k] = scope.querySelector<SVGGraphicsElement>(".n-" + k) || scope.querySelector<SVGGraphicsElement>(".r-" + k);
         });
         const pivot = (el: SVGGraphicsElement | null, x: number, y: number) => {
           if (!el) return;
@@ -445,7 +445,14 @@ export function useSiteAnimations() {
     }
     $$("[data-split]").forEach(splitWords);
 
-    /* ---------- smooth scroll ---------- */
+    /* ---------- smooth scroll & scroll restoration ---------- */
+    if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+
+    if (!window.location.hash) {
+      window.scrollTo(0, 0);
+    }
     if (!reduce) {
       lenis = new Lenis({ lerp: 0.09, smoothWheel: true });
       lenis.on("scroll", () => ScrollTrigger.update());
@@ -625,6 +632,54 @@ export function useSiteAnimations() {
         .add(() => typeInto(say, text), 1.9);
     });
 
+
+    /* ==================================================================
+       AUTHORIZED TRAVEL PARTNERS — subtle scroll reveal
+       ================================================================== */
+    safe("partners", () => {
+      const section = $(".partners-sec");
+      if (!section) return;
+      const head = $(".partners-sec__head", section);
+      const cards = $$(".partner-card", section);
+
+      if (head) {
+        gsap.fromTo(
+          head,
+          { opacity: 0, y: 24 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 80%",
+              once: true,
+            },
+          }
+        );
+      }
+
+      if (cards.length) {
+        gsap.fromTo(
+          cards,
+          { opacity: 0, y: 28 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.7,
+            stagger: 0.12,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 72%",
+              once: true,
+            },
+          }
+        );
+      }
+    });
+
     /* ==================================================================
        JOURNEY — one scrubbed timeline: taxi → flight → rail → coach → VIP car → venue
        ================================================================== */
@@ -646,10 +701,15 @@ export function useSiteAnimations() {
         train = $("#jTrain", svg),
         coach = $("#jCoach", svg),
         mpv = $("#jMpv", svg),
-        nila = $("#jNila", svg);
+        nila = $("#jNila", svg),
+        representative = $("#jRepresentative", svg),
+        passenger = $("#jPassenger", svg),
+        welcome = $("#jWelcome", svg);
       const petals = $$("#jPetals ellipse", svg);
       if (!nila) return;
       const jr = new Rig(nila);
+      const pRig = passenger ? new Rig(passenger) : null;
+      const rRig = representative ? new Rig(representative) : null;
       const cards = $$(".jcard", section);
       const steps = $$<HTMLButtonElement>(".journey__steps button", section);
       const bar = $(".journey__bar span", section);
@@ -680,6 +740,9 @@ export function useSiteAnimations() {
       if (train) gsap.set(train, { x: -1500, y: 700 });
       if (coach) gsap.set(coach, { x: -700, y: 790 });
       if (mpv) gsap.set(mpv, { x: -500, y: 790 });
+      if (representative) gsap.set(representative, { autoAlpha: 0, x: 880, y: 800 });
+      if (passenger) gsap.set(passenger, { autoAlpha: 0, x: 420, y: 800 });
+      if (welcome) gsap.set(welcome, { autoAlpha: 0, x: 680, y: 570 });
       gsap.set(nila, { x: 600, y: 800, autoAlpha: 0, transformOrigin: "50% 100%" });
       if (cruise) gsap.set(cruise, { x: 1800 });
       gsap.set($$(".wheel", svg), { transformOrigin: "50% 50%" });
@@ -696,7 +759,7 @@ export function useSiteAnimations() {
         return;
       }
 
-      const STAGES = [0, 2.3, 7.2, 8.6, 10.0, 11.3];
+      const STAGES = [0, 2.3, 10.2, 11.6, 13.0, 14.35];
       gsap.set(cards, { autoAlpha: 0, y: 16 });
       if (cards[0]) gsap.set(cards[0], { autoAlpha: 1, y: 0 });
 
@@ -705,7 +768,7 @@ export function useSiteAnimations() {
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: () => "+=" + Math.round(window.innerHeight * 8.5),
+          end: () => "+=" + Math.round(window.innerHeight * 10.5),
           pin: true,
           scrub: 1,
           refreshPriority: 1,
@@ -786,49 +849,117 @@ export function useSiteAnimations() {
       if (porthole) tl.to(porthole, { autoAlpha: 0, scale: 0, duration: 0.18 }, 6.72);
       camX(5200, 0.01, 6.92);
 
-      // descent; the ground returns with the railway
-      if (plane) tl.to(plane, { x: 1950, y: 300, duration: 0.8, ease: "power1.in" }, 6.95);
-      if (body) tl.to(body, { rotation: -6, duration: 0.6 }, 6.95);
-      camY(0, 0.8, 6.95);
-      camX(5800, 0.8, 6.95);
-      if (alt) tl.to(alt, { opacity: 0, duration: 0.8 }, 6.95);
+      // Flight Landing Sequence: descent approach, landing gear deployment, flare, runway touchdown & taxi rollout
+      camY(0, 0.9, 6.92, "power1.inOut");
+      if (alt) tl.to(alt, { opacity: 0, duration: 0.8 }, 6.92);
+      camX(5700, 1.1, 6.92, "power1.inOut");
+      if (plane) tl.to($(".gear", plane), { scaleY: 1, duration: 0.25, ease: "back.out(2)" }, 7.15);
+      if (body) tl.to(body, { rotation: 4, duration: 0.45, ease: "power1.inOut" }, 6.95);
+      if (plane) tl.to(plane, { x: 960, y: 780, duration: 0.65, ease: "power1.in" }, 6.95);
+      // Flare nose-up right before touchdown
+      if (body) tl.to(body, { rotation: -3.5, duration: 0.25, ease: "power1.out" }, 7.45);
+      // Touchdown on destination runway
+      if (plane) tl.to(plane, { y: 800, duration: 0.25, ease: "power2.in" }, 7.45);
+      // Gear suspension bounce and leveling
+      if (plane) tl.to(plane, { y: 804, duration: 0.08, yoyo: true, repeat: 1, ease: "sine.inOut" }, 7.7);
+      if (body) tl.to(body, { rotation: 0, duration: 0.25, ease: "power1.out" }, 7.7);
+      // Deceleration & taxi roll to arrivals terminal
+      camX(6250, 0.7, 7.9, "power2.out");
+      if (plane) tl.to(plane, { x: 800, duration: 0.7, ease: "power2.out" }, 7.9);
 
-      // 3 · train
-      if (train) tl.to(train, { x: 1200, duration: 0.9, ease: "power2.out" }, 7.25);
-      spin(train, deg(3300, 11), 0.9, 7.25, "power2.out");
-      camX(7400, 1.2, 7.75);
-      spin(train, deg(1600, 11), 1.2, 7.75);
-      wave($("#jTrain .mini-hand", svg), 7.9, 9);
+      // Helper function to animate legs walking on any character puppet
+      const walkChar = (r: Rig | null, at: number, dur: number, reverse = false) => {
+        if (!r) return;
+        const n = Math.max(1, Math.round(dur / 0.14)) * 2 - 1;
+        const dir = reverse ? -1 : 1;
+        if (r.p.legL) tl.to(r.p.legL, { rotation: 12 * dir, duration: dur / (n + 1), repeat: n, yoyo: true, ease: "sine.inOut" }, at);
+        if (r.p.legR) tl.to(r.p.legR, { rotation: -12 * dir, duration: dur / (n + 1), repeat: n, yoyo: true, ease: "sine.inOut" }, at);
+      };
 
-      // 4 · coach takes over on the road
-      if (coach) tl.to(coach, { x: 800, duration: 0.8, ease: "power2.out" }, 8.55);
-      spin(coach, deg(2200, 27), 0.8, 8.55, "power2.out");
-      if (train) tl.to(train, { x: 3300, duration: 0.75, ease: "power2.in" }, 8.75);
-      spin(train, deg(3000, 11), 0.75, 8.75, "power2.in");
-      camX(8300, 1, 8.95);
-      spin(coach, deg(900, 27), 1, 9.35);
-      wave($("#jCoach .mini-hand", svg), 9.0, 7);
+      // Airport Arrival & Passenger Welcome Sequence (Cartoon Characters: Nila & Sahi Welcome Representative)
+      if (plane) tl.to($(".door", plane), { opacity: 0.15, duration: 0.15 }, 8.65);
+      
+      // 1. Arriving Passenger (Nila with rolling suitcase) emerges from flight gate
+      if (passenger) {
+        tl.to(passenger, { autoAlpha: 1, duration: 0.1 }, 8.68);
+        tl.to(passenger, { x: 550, duration: 0.55, ease: "power1.out" }, 8.7);
+        walkChar(pRig, 8.7, 0.55);
+      }
+      
+      // 2. Sahi Travels Welcome Representative enters from the right in corporate uniform
+      if (representative) {
+        tl.to(representative, { autoAlpha: 1, duration: 0.1 }, 8.73);
+        tl.to(representative, { x: 730, duration: 0.5, ease: "power1.out" }, 8.75);
+        walkChar(rRig, 8.75, 0.5, true);
+      }
 
-      // 5 · VIP car to the venue
-      if (coach) tl.to(coach, { x: 2200, duration: 0.65, ease: "power2.in" }, 9.95);
-      spin(coach, deg(2200, 27), 0.65, 9.95, "power2.in");
-      if (mpv) tl.to(mpv, { x: 800, duration: 0.7, ease: "power2.out" }, 10.05);
-      spin(mpv, deg(2100, 23), 0.7, 10.05, "power2.out");
-      camX(9100, 0.75, 9.95);
-      camX(9500, 0.6, 10.7, "power2.out");
-      if (mpv) tl.to(mpv, { x: 680, duration: 0.6, ease: "power2.out" }, 10.7);
-      spin(mpv, deg(280, 23), 0.6, 10.7, "power2.out");
+      // 3. "SAHI TRAVELS · ARRIVAL DESK / Welcome to your destination." card appears
+      if (welcome) tl.fromTo(welcome, { autoAlpha: 0, y: 585 }, { autoAlpha: 1, y: 570, duration: 0.4, ease: "power2.out" }, 9.0);
 
-      // 6 · arrival — Nila steps out and walks under the flower arch
-      tl.to($("#jMpv .mini-wrap", svg), { autoAlpha: 0, duration: 0.08 }, 11.3);
-      tl.to(nila, { x: 650, y: 800, scale: 1, duration: 0.01 }, 11.28);
-      tl.to(nila, { autoAlpha: 1, duration: 0.15 }, 11.32);
-      tl.to(nila, { x: 1060, y: 728, scale: 0.9, duration: 0.6 }, 11.45);
-      walkLegs(11.45, 0.6);
-      if (jr.p.armR) tl.to(jr.p.armR, { rotation: 148, duration: 0.15 }, 12.05);
-      if (jr.p.foreR) tl.to(jr.p.foreR, { rotation: -26, duration: 0.1, repeat: 5, yoyo: true }, 12.2);
-      tl.to(petals, { y: "+=880", x: "random(-70, 70)", rotation: "random(-300, 300)", duration: 1.2, stagger: 0.015 }, 11.3);
-      tl.to({}, { duration: 0.4 }, 12.6);
+      // 4. Expressive Brand Greeting: Representative waves to welcome, Nila waves back happily
+      if (rRig?.p.armR) {
+        tl.to(rRig.p.armR, { rotation: 140, duration: 0.25, ease: "back.out(1.5)" }, 9.08);
+        if (rRig.p.foreR) {
+          tl.to(rRig.p.foreR, { rotation: -24, duration: 0.12, repeat: 4, yoyo: true, ease: "sine.inOut" }, 9.2);
+        }
+      }
+      if (pRig?.p.armR) {
+        tl.to(pRig.p.armR, { rotation: 135, duration: 0.22, ease: "back.out(1.5)" }, 9.25);
+        if (pRig.p.foreR) {
+          tl.to(pRig.p.foreR, { rotation: -20, duration: 0.12, repeat: 4, yoyo: true, ease: "sine.inOut" }, 9.35);
+        }
+      }
+      if (rRig?.p.head) {
+        tl.to(rRig.p.head, { rotation: -3, duration: 0.3, yoyo: true, repeat: 1, ease: "sine.inOut" }, 9.15);
+      }
+      if (pRig?.p.head) {
+        tl.to(pRig.p.head, { rotation: 3, duration: 0.3, yoyo: true, repeat: 1, ease: "sine.inOut" }, 9.3);
+      }
+
+      // 5. Welcome scene completes smoothly before railway transfer begins
+      if (welcome) tl.to(welcome, { autoAlpha: 0, y: 555, duration: 0.22, ease: "power1.in" }, 9.85);
+      if (representative && passenger) {
+        tl.to([representative, passenger], { autoAlpha: 0, duration: 0.25, ease: "power1.in" }, 9.9);
+      }
+      if (plane) tl.to(plane, { x: -600, duration: 0.6, ease: "power2.in" }, 9.95);
+      camX(7200, 0.65, 9.95, "power1.inOut");
+
+      // 3 · train (Rail Step 3 starts at 10.2)
+      if (train) tl.to(train, { x: 1200, duration: 0.9, ease: "power2.out" }, 10.2);
+      spin(train, deg(3300, 11), 0.9, 10.2, "power2.out");
+      camX(7600, 1.2, 10.5);
+      spin(train, deg(1600, 11), 1.2, 10.5);
+      wave($("#jTrain .mini-hand", svg), 10.6, 9);
+
+      // 4 · coach takes over on the road (Step 4 starts at 11.6)
+      if (coach) tl.to(coach, { x: 800, duration: 0.8, ease: "power2.out" }, 11.6);
+      spin(coach, deg(2200, 27), 0.8, 11.6, "power2.out");
+      if (train) tl.to(train, { x: 3300, duration: 0.75, ease: "power2.in" }, 11.75);
+      spin(train, deg(3000, 11), 0.75, 11.75, "power2.in");
+      camX(8450, 1, 11.95);
+      spin(coach, deg(900, 27), 1, 12.35);
+      wave($("#jCoach .mini-hand", svg), 12.0, 7);
+
+      // 5 · VIP car to the venue (Step 5 starts at 13.0)
+      if (coach) tl.to(coach, { x: 2200, duration: 0.65, ease: "power2.in" }, 12.95);
+      spin(coach, deg(2200, 27), 0.65, 12.95, "power2.in");
+      if (mpv) tl.to(mpv, { x: 800, duration: 0.7, ease: "power2.out" }, 13.05);
+      spin(mpv, deg(2100, 23), 0.7, 13.05, "power2.out");
+      camX(9200, 0.75, 12.95);
+      camX(9600, 0.6, 13.7, "power2.out");
+      if (mpv) tl.to(mpv, { x: 680, duration: 0.6, ease: "power2.out" }, 13.7);
+      spin(mpv, deg(280, 23), 0.6, 13.7, "power2.out");
+
+      // 6 · arrival — Nila steps out and walks under the flower arch (Step 6 starts at 14.35)
+      tl.to($("#jMpv .mini-wrap", svg), { autoAlpha: 0, duration: 0.08 }, 14.35);
+      tl.to(nila, { x: 650, y: 800, scale: 1, duration: 0.01 }, 14.33);
+      tl.to(nila, { autoAlpha: 1, duration: 0.15 }, 14.37);
+      tl.to(nila, { x: 1060, y: 728, scale: 0.9, duration: 0.6 }, 14.5);
+      walkLegs(14.5, 0.6);
+      if (jr.p.armR) tl.to(jr.p.armR, { rotation: 148, duration: 0.15 }, 15.1);
+      if (jr.p.foreR) tl.to(jr.p.foreR, { rotation: -26, duration: 0.1, repeat: 5, yoyo: true }, 15.25);
+      tl.to(petals, { y: "+=880", x: "random(-70, 70)", rotation: "random(-300, 300)", duration: 1.2, stagger: 0.015 }, 14.35);
+      tl.to({}, { duration: 0.5 }, 15.65);
 
       // caption cards
       STAGES.forEach((t, i) => {
@@ -846,6 +977,90 @@ export function useSiteAnimations() {
           scrollToTarget(pos);
         })
       );
+    });
+
+
+    /* ==================================================================
+       AUTHORIZED TRAVEL AFFILIATIONS — section reveal & logo animation
+       ================================================================== */
+    safe("affiliations", () => {
+      const section = $(".affiliations-sec");
+      if (!section) return;
+      const head = $(".affiliations-sec__head", section);
+      const cards = $$(".affiliation-card", section);
+
+      if (head) {
+        gsap.fromTo(
+          head,
+          { opacity: 0, y: 22 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: section,
+              start: "top 80%",
+              once: true,
+            },
+          }
+        );
+      }
+
+      if (cards.length >= 3) {
+        if (reduce) {
+          gsap.set(cards, { opacity: 1, x: 0, y: 0, scale: 1 });
+          return;
+        }
+
+        // Phase 1 & 2: Staggered reveal with custom directional offsets
+        // Card 1 (TTDC): from slight left offset
+        // Card 2 (TAAI): from slight lower offset
+        // Card 3 (IATA): from slight right offset
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: "top 75%",
+            once: true,
+          },
+          onComplete: () => {
+              if (reduce) return;
+              // Phase 3: Subtle continuous floating motion
+              const floatDurs = [3.2, 2.8, 3.5];
+              const floatDelays = [0, 0.35, 0.7];
+              const floatDists = [-5, -6, -5];
+              cards.forEach((card, i) => {
+                gsap.to(card, {
+                  y: floatDists[i % 3],
+                  duration: floatDurs[i % 3],
+                  delay: floatDelays[i % 3],
+                  repeat: -1,
+                  yoyo: true,
+                  ease: "sine.inOut",
+                });
+              });
+            },
+        });
+
+        tl.fromTo(
+          cards[0],
+          { opacity: 0, x: -32, scale: 0.96 },
+          { opacity: 1, x: 0, scale: 1, duration: 0.75, ease: "power2.out" },
+          0
+        )
+        .fromTo(
+          cards[1],
+          { opacity: 0, y: 32, scale: 0.96 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.75, ease: "power2.out" },
+          0.14
+        )
+        .fromTo(
+          cards[2],
+          { opacity: 0, x: 32, scale: 0.96 },
+          { opacity: 1, x: 0, scale: 1, duration: 0.75, ease: "power2.out" },
+          0.28
+        );
+      }
     });
 
     /* ==================================================================
