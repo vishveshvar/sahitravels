@@ -22,6 +22,26 @@ export default function JourneySection() {
             One trip, every ride — <span className="serif-i">one desk handles it.</span>
           </h2>
         </header>
+
+        {/* Welcome Banner — Airport Meet & Greet Greeting Card */}
+        <aside
+          id="jWelcome"
+          className="journey__welcome"
+          aria-label="Airport Arrival Greeting"
+        >
+          <div className="journey__welcome-inner">
+            <p className="journey__welcome-badge mono">
+              SAHI TRAVELS · ARRIVAL DESK
+            </p>
+            <h3 className="journey__welcome-title">
+              Welcome to your destination.
+            </h3>
+            <p className="journey__welcome-text">
+              Your flight has landed. Our representative is here to welcome you.
+            </p>
+          </div>
+        </aside>
+
         <div className="journey__cards">
           <article className="jcard">
             <p className="jcard__step mono">Step 1 of 6 · Taxi</p>
@@ -64,7 +84,7 @@ export default function JourneySection() {
             <p className="jcard__step mono">Step 4 of 6 · Coach</p>
             <h3>Premium coaches</h3>
             <p>
-              Volvo and Mercedes-Benz luxury coaches, ·C, executive and
+              Volvo and Mercedes-Benz luxury coaches, AC, executive and
               sleeper coaches for groups, tours and companies.
             </p>
             <ul className="chips">
@@ -77,18 +97,18 @@ export default function JourneySection() {
             <p className="jcard__step mono">Step 5 of 6 · VIP car</p>
             <h3>VIP &amp; luxury cars</h3>
             <p>
-              Toyota Vellfire, Mercedes-Benz, BMW, ·udi and premium SUVs for
+              Toyota Vellfire, Mercedes-Benz, BMW, Audi and premium SUVs for
               VIP arrivals, executives and weddings.
             </p>
             <ul className="chips">
               <li>Vellfire</li>
               <li>Mercedes-Benz</li>
               <li>BMW</li>
-              <li>·udi</li>
+              <li>Audi</li>
             </ul>
           </article>
           <article className="jcard">
-            <p className="jcard__step mono">Step 6 of 6 · ·rrival</p>
+            <p className="jcard__step mono">Step 6 of 6 · Arrival</p>
             <h3>Hotels &amp; events</h3>
             <p>
               Hotels, resorts and villas — and wedding and event transport,
@@ -186,7 +206,7 @@ export default function JourneySection() {
               >
                 <path d="M4 21V9l8-5 8 5v12M9 21v-6h6v6" />
               </svg>
-              <span>·rrival</span>
+              <span>Arrival</span>
             </button>
           </li>
         </ol>
@@ -197,4 +217,3 @@ export default function JourneySection() {
     </section>
   );
 }
-

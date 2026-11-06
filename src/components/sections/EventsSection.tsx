@@ -36,11 +36,11 @@ export default function EventsSection() {
               <li>Receptions</li>
               <li>Engagements</li>
               <li>Birthdays</li>
-              <li>·nniversaries</li>
+              <li>Anniversaries</li>
               <li>Corporate events</li>
               <li>Conferences</li>
               <li>Exhibitions</li>
-              <li>·ward functions</li>
+              <li>Award functions</li>
               <li>Gala events</li>
             </ul>
           </div>

@@ -41,7 +41,7 @@ export default function HolidaysSection() {
             <div className="hcard__media">
               <img
                 src="/assets/img/pilgrimage-mosque.jpg"
-                alt="· white mosque reflected in still water at sunset"
+                alt="A white mosque reflected in still water at sunset"
                 loading="lazy"
               />
               <span className="hcard__shine"></span>
@@ -58,7 +58,7 @@ export default function HolidaysSection() {
             <div className="hcard__media">
               <img
                 src="/assets/img/cruise-sunset.jpg"
-                alt="· cruise ship at sea under an orange sunset"
+                alt="A cruise ship at sea under an orange sunset"
                 loading="lazy"
               />
               <span className="hcard__shine"></span>

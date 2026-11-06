@@ -484,6 +484,110 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .journey.is-static .journey__steps, .journey.is-static .journey__bar { display: none; }
 
 /* ==========================================================================
+   Journey — Welcome Banner (Airport Meet & Greet)
+   ========================================================================== */
+.journey__welcome {
+  position: absolute;
+  z-index: 4;
+  top: clamp(100px, 16vh, 180px);
+  right: clamp(24px, 3.5vw, 64px);
+  width: min(420px, calc(100vw - 48px));
+  background: var(--sand-0, #FAF6F2);
+  border: 2px solid var(--apricot, #C75A3A);
+  border-radius: 20px;
+  padding: clamp(16px, 1.8vw, 24px) clamp(18px, 2vw, 28px);
+  box-shadow: 0 16px 36px rgba(58, 15, 52, 0.18);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  will-change: transform, opacity;
+}
+
+.journey__welcome-inner {
+  position: relative;
+  outline: 1.2px dashed rgba(201, 160, 167, 0.85);
+  outline-offset: -6px;
+  padding: clamp(10px, 1.2vw, 16px) clamp(12px, 1.4vw, 20px);
+  border-radius: 14px;
+  text-align: center;
+}
+
+.journey__welcome-badge {
+  font-family: var(--f-mono, "IBM Plex Mono", monospace);
+  font-size: clamp(9.5px, 0.85vw, 11px);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: var(--apricot-ink, #C75A3A);
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  display: block;
+}
+
+.journey__welcome-title {
+  font-family: var(--f-serif, Cormorant Garamond, Georgia, serif);
+  font-size: clamp(20px, 1.9vw, 28px);
+  font-style: italic;
+  font-weight: 600;
+  color: var(--navy, #3A0F34);
+  margin: 0 0 6px;
+  line-height: 1.2;
+}
+
+.journey__welcome-text {
+  font-family: var(--f-sans, Archivo, sans-serif);
+  font-size: clamp(12px, 0.95vw, 13.5px);
+  font-weight: 500;
+  color: var(--ink-2, #73566F);
+  margin: 0;
+  line-height: 1.5;
+}
+
+@media (max-width: 1280px) {
+  .journey__welcome {
+    top: clamp(86px, 13vh, 140px);
+    right: 24px;
+    width: min(360px, calc(100vw - 48px));
+  }
+}
+
+@media (max-width: 900px) {
+  .journey__welcome {
+    top: clamp(74px, 11vh, 110px);
+    right: 16px;
+    width: min(330px, calc(100vw - 32px));
+    padding: 12px 14px;
+  }
+  .journey__welcome-inner {
+    padding: 8px 10px;
+    outline-offset: -4px;
+  }
+}
+
+@media (max-width: 640px) {
+  .journey__welcome {
+    top: clamp(232px, 28vh, 260px);
+    bottom: auto;
+    left: 16px;
+    right: 16px;
+    margin: 0 auto;
+    width: auto;
+    max-width: 340px;
+    padding: 12px 14px;
+  }
+}
+
+.journey.is-static .journey__welcome {
+  position: relative;
+  top: auto;
+  right: auto;
+  margin: 20px var(--gutter);
+  width: auto;
+  opacity: 1;
+  visibility: visible;
+}
+
+
+/* ==========================================================================
    Ride playground — Studio Stage & Fleet
    ========================================================================== */
 .ride { background: var(--bg); }

@@ -1,6 +1,6 @@
 import { buildGuide } from "@/lib/artGenerators";
 
-export default function Guide·side() {
+export default function GuideAside() {
   return (
     <aside className="guide" id="guide" aria-label="Nila, your guide">
       <div className="guide__bubble" aria-hidden="true">

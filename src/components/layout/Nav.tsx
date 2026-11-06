@@ -11,18 +11,18 @@ export default function Nav() {
               height="28"
               rx="9"
               fill="none"
-              stroke="#C75·3·"
+              stroke="#C75A3A"
               strokeWidth="2.4"
             />
             <path
               d="M6 21c4-3 8-4 12-4"
               fill="none"
-              stroke="#3·0F34"
+              stroke="#3A0F34"
               strokeWidth="2.4"
               strokeLinecap="round"
             />
           </svg>
-          <span className="brand__word">S·HI</span>
+          <span className="brand__word">SAHI</span>
           <span className="brand__sub">Travels</span>
         </a>
         <nav className="nav__links" aria-label="Primary">

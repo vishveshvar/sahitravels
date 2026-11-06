@@ -387,13 +387,6 @@
           ${repRig()}
         </g>
       </g>
-      <g id="jWelcome" opacity="0" pointer-events="none">
-        <rect x="-240" y="-64" width="480" height="128" rx="24" fill="#FAF6F2" stroke="#C75A3A" stroke-width="2.4" filter="drop-shadow(0 16px 36px rgba(58,15,52,0.18))"/>
-        <rect x="-234" y="-58" width="468" height="116" rx="18" fill="none" stroke="#C9A0A7" stroke-width="1" stroke-dasharray="5 3"/>
-        <text x="0" y="-30" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" letter-spacing="2.2" fill="#C75A3A">SAHI TRAVELS · ARRIVAL DESK</text>
-        <text x="0" y="6" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-size="29" font-style="italic" font-weight="600" fill="#3A0F34">Welcome to your destination.</text>
-        <text x="0" y="33" text-anchor="middle" font-family="Archivo, sans-serif" font-size="13.5" font-weight="500" fill="#73566F">Your flight has landed. We’re delighted to welcome you.</text>
-      </g>
       <g id="jPetals">${petals}</g>
     </svg>`;
   }

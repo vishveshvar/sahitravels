@@ -704,7 +704,7 @@ export function useSiteAnimations() {
         nila = $("#jNila", svg),
         representative = $("#jRepresentative", svg),
         passenger = $("#jPassenger", svg),
-        welcome = $("#jWelcome", svg);
+        welcome = $("#jWelcome", section) || $("#jWelcome");
       const petals = $$("#jPetals ellipse", svg);
       if (!nila) return;
       const jr = new Rig(nila);
@@ -742,7 +742,7 @@ export function useSiteAnimations() {
       if (mpv) gsap.set(mpv, { x: -500, y: 790 });
       if (representative) gsap.set(representative, { autoAlpha: 0, x: 880, y: 800 });
       if (passenger) gsap.set(passenger, { autoAlpha: 0, x: 420, y: 800 });
-      if (welcome) gsap.set(welcome, { autoAlpha: 0, x: 680, y: 570 });
+      if (welcome) gsap.set(welcome, { autoAlpha: 0, x: 28 });
       gsap.set(nila, { x: 600, y: 800, autoAlpha: 0, transformOrigin: "50% 100%" });
       if (cruise) gsap.set(cruise, { x: 1800 });
       gsap.set($$(".wheel", svg), { transformOrigin: "50% 50%" });
@@ -759,7 +759,7 @@ export function useSiteAnimations() {
         return;
       }
 
-      const STAGES = [0, 2.3, 10.2, 11.6, 13.0, 14.35];
+      const STAGES = [0, 2.3, 10.7, 12.1, 13.5, 14.85];
       gsap.set(cards, { autoAlpha: 0, y: 16 });
       if (cards[0]) gsap.set(cards[0], { autoAlpha: 1, y: 0 });
 
@@ -768,7 +768,7 @@ export function useSiteAnimations() {
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: () => "+=" + Math.round(window.innerHeight * 10.5),
+          end: () => "+=" + Math.round(window.innerHeight * 11),
           pin: true,
           scrub: 1,
           refreshPriority: 1,
@@ -824,7 +824,8 @@ export function useSiteAnimations() {
       if (plane) tl.to($(".door", plane), { opacity: 1, duration: 0.1 }, 3.78);
       if (stairs) tl.to(stairs, { x: "-=90", autoAlpha: 0, duration: 0.22 }, 3.8);
 
-      // takeoff
+      // takeoff & climb
+      tl.addLabel("flight-takeoff", 4.0);
       camX(3700, 1, 4.0, "power2.in");
       if (taxi) tl.to(taxi, { x: "-=1200", duration: 1, ease: "power2.in" }, 4.0);
       if (plane) tl.to(plane, { x: 900, duration: 1, ease: "power1.inOut" }, 4.0);
@@ -832,7 +833,6 @@ export function useSiteAnimations() {
       if (plane) tl.to(plane, { y: 690, duration: 0.4, ease: "power1.in" }, 4.6);
       if (plane) tl.to($(".gear", plane), { scaleY: 0, transformOrigin: "50% 0%", duration: 0.15 }, 4.95);
 
-      // climb
       camY(900, 1, 4.95);
       if (taxi) tl.to(taxi, { y: 790 + 900, duration: 1, ease: "power1.inOut" }, 4.95);
       camX(4300, 1, 5.0);
@@ -842,30 +842,43 @@ export function useSiteAnimations() {
       if (taxi) tl.to(taxi, { autoAlpha: 0, duration: 0.05 }, 5.9);
 
       // cruise — Nila waves from her window
+      tl.addLabel("flight-cruise", 5.4);
       if (cruise) tl.to(cruise, { x: -2800, duration: 1.7 }, 5.4);
       if (body) tl.to(body, { rotation: 0, duration: 0.4 }, 5.95);
       if (porthole) tl.to(porthole, { autoAlpha: 1, scale: 1, duration: 0.25, ease: "back.out(2)" }, 5.95);
       wave($(".porthole .mini-hand", plane || svg), 6.2, 5);
       if (porthole) tl.to(porthole, { autoAlpha: 0, scale: 0, duration: 0.18 }, 6.72);
-      camX(5200, 0.01, 6.92);
 
-      // Flight Landing Sequence: descent approach, landing gear deployment, flare, runway touchdown & taxi rollout
-      camY(0, 0.9, 6.92, "power1.inOut");
-      if (alt) tl.to(alt, { opacity: 0, duration: 0.8 }, 6.92);
-      camX(5700, 1.1, 6.92, "power1.inOut");
-      if (plane) tl.to($(".gear", plane), { scaleY: 1, duration: 0.25, ease: "back.out(2)" }, 7.15);
-      if (body) tl.to(body, { rotation: 4, duration: 0.45, ease: "power1.inOut" }, 6.95);
-      if (plane) tl.to(plane, { x: 960, y: 780, duration: 0.65, ease: "power1.in" }, 6.95);
-      // Flare nose-up right before touchdown
-      if (body) tl.to(body, { rotation: -3.5, duration: 0.25, ease: "power1.out" }, 7.45);
-      // Touchdown on destination runway
-      if (plane) tl.to(plane, { y: 800, duration: 0.25, ease: "power2.in" }, 7.45);
-      // Gear suspension bounce and leveling
-      if (plane) tl.to(plane, { y: 804, duration: 0.08, yoyo: true, repeat: 1, ease: "sine.inOut" }, 7.7);
-      if (body) tl.to(body, { rotation: 0, duration: 0.25, ease: "power1.out" }, 7.7);
-      // Deceleration & taxi roll to arrivals terminal
-      camX(6250, 0.7, 7.9, "power2.out");
-      if (plane) tl.to(plane, { x: 800, duration: 0.7, ease: "power2.out" }, 7.9);
+      // Scene 2 — Flight Landing: smooth cinematic approach, descent, flare, touchdown & rollout
+      tl.addLabel("flight-landing", 6.8);
+      // Smooth camera motion tracking toward destination airport (no sudden jump!)
+      camX(5200, 0.7, 6.75, "power1.inOut");
+      camY(0, 1.1, 6.8, "power1.inOut");
+      if (alt) tl.to(alt, { opacity: 0, duration: 0.8 }, 6.8);
+      camX(5750, 1.2, 7.45, "power1.inOut");
+
+      // Airplane descends smoothly towards runway
+      if (body) tl.to(body, { rotation: 3.5, duration: 0.45, ease: "power1.inOut" }, 6.85);
+      if (plane) tl.to(plane, { x: 960, y: 740, duration: 0.75, ease: "power1.in" }, 6.85);
+      // Landing gear deploys smoothly with realistic mechanical ease
+      if (plane) tl.to($(".gear", plane), { scaleY: 1, duration: 0.28, ease: "back.out(2)" }, 7.25);
+      // Aerodynamic landing flare right before runway contact
+      if (body) tl.to(body, { rotation: -3.5, duration: 0.32, ease: "power1.out" }, 7.6);
+      if (plane) tl.to(plane, { y: 796, duration: 0.32, ease: "power2.in" }, 7.6);
+      // Runway touchdown & suspension cushion bounce
+      if (plane) tl.to(plane, { y: 800, duration: 0.12, ease: "sine.inOut" }, 7.92);
+      if (body) tl.to(body, { rotation: 0, duration: 0.22, ease: "power1.out" }, 7.92);
+      if (plane) tl.to(plane, { y: 803, duration: 0.08, yoyo: true, repeat: 1, ease: "sine.inOut" }, 8.04);
+      // Deceleration & smooth taxi roll toward Destination Arrivals Terminal
+      camX(6250, 0.85, 8.12, "power2.out");
+      if (plane) tl.to(plane, { x: 780, duration: 0.85, ease: "power2.out" }, 8.12);
+
+      // Scene 3 — Arrival: aircraft settles in arrival gate bay
+      tl.addLabel("flight-arrival", 8.97);
+      if (plane) tl.to($(".door", plane), { opacity: 0.15, duration: 0.18 }, 9.02);
+
+      // Scene 4 — Meet & Greet Service: Representative & Arriving Passenger interaction + Welcome Banner
+      tl.addLabel("meet-and-greet", 9.2);
 
       // Helper function to animate legs walking on any character puppet
       const walkChar = (r: Rig | null, at: number, dur: number, reverse = false) => {
@@ -876,90 +889,93 @@ export function useSiteAnimations() {
         if (r.p.legR) tl.to(r.p.legR, { rotation: -12 * dir, duration: dur / (n + 1), repeat: n, yoyo: true, ease: "sine.inOut" }, at);
       };
 
-      // Airport Arrival & Passenger Welcome Sequence (Cartoon Characters: Nila & Sahi Welcome Representative)
-      if (plane) tl.to($(".door", plane), { opacity: 0.15, duration: 0.15 }, 8.65);
-      
-      // 1. Arriving Passenger (Nila with rolling suitcase) emerges from flight gate
+      // 1. Arriving Passenger (Nila with suitcase) emerges from flight terminal gate
       if (passenger) {
-        tl.to(passenger, { autoAlpha: 1, duration: 0.1 }, 8.68);
-        tl.to(passenger, { x: 550, duration: 0.55, ease: "power1.out" }, 8.7);
-        walkChar(pRig, 8.7, 0.55);
+        tl.to(passenger, { autoAlpha: 1, duration: 0.12 }, 9.2);
+        tl.to(passenger, { x: 560, duration: 0.58, ease: "power1.out" }, 9.22);
+        walkChar(pRig, 9.22, 0.58, false);
       }
-      
-      // 2. Sahi Travels Welcome Representative enters from the right in corporate uniform
+
+      // 2. Sahi Travels Welcome Representative enters from the terminal side in corporate uniform
       if (representative) {
-        tl.to(representative, { autoAlpha: 1, duration: 0.1 }, 8.73);
-        tl.to(representative, { x: 730, duration: 0.5, ease: "power1.out" }, 8.75);
-        walkChar(rRig, 8.75, 0.5, true);
+        tl.to(representative, { autoAlpha: 1, duration: 0.12 }, 9.24);
+        tl.to(representative, { x: 720, duration: 0.56, ease: "power1.out" }, 9.26);
+        walkChar(rRig, 9.26, 0.56, true);
       }
 
-      // 3. "SAHI TRAVELS · ARRIVAL DESK / Welcome to your destination." card appears
-      if (welcome) tl.fromTo(welcome, { autoAlpha: 0, y: 585 }, { autoAlpha: 1, y: 570, duration: 0.4, ease: "power2.out" }, 9.0);
+      // 3. Welcome Banner animates into view smoothly on the RIGHT side
+      if (welcome) {
+        tl.fromTo(welcome, { autoAlpha: 0, x: 28 }, { autoAlpha: 1, x: 0, duration: 0.5, ease: "power2.out" }, 9.55);
+      }
 
-      // 4. Expressive Brand Greeting: Representative waves to welcome, Nila waves back happily
+      // 4. Expressive brand greeting: Representative waves & nods, passenger smiles & waves back
       if (rRig?.p.armR) {
-        tl.to(rRig.p.armR, { rotation: 140, duration: 0.25, ease: "back.out(1.5)" }, 9.08);
+        tl.to(rRig.p.armR, { rotation: 140, duration: 0.28, ease: "back.out(1.6)" }, 9.6);
         if (rRig.p.foreR) {
-          tl.to(rRig.p.foreR, { rotation: -24, duration: 0.12, repeat: 4, yoyo: true, ease: "sine.inOut" }, 9.2);
-        }
-      }
-      if (pRig?.p.armR) {
-        tl.to(pRig.p.armR, { rotation: 135, duration: 0.22, ease: "back.out(1.5)" }, 9.25);
-        if (pRig.p.foreR) {
-          tl.to(pRig.p.foreR, { rotation: -20, duration: 0.12, repeat: 4, yoyo: true, ease: "sine.inOut" }, 9.35);
+          tl.to(rRig.p.foreR, { rotation: -24, duration: 0.12, repeat: 4, yoyo: true, ease: "sine.inOut" }, 9.72);
         }
       }
       if (rRig?.p.head) {
-        tl.to(rRig.p.head, { rotation: -3, duration: 0.3, yoyo: true, repeat: 1, ease: "sine.inOut" }, 9.15);
+        tl.to(rRig.p.head, { rotation: -4, duration: 0.25, yoyo: true, repeat: 1, ease: "sine.inOut" }, 9.68);
+      }
+      if (pRig?.p.armR) {
+        tl.to(pRig.p.armR, { rotation: 135, duration: 0.25, ease: "back.out(1.6)" }, 9.78);
+        if (pRig.p.foreR) {
+          tl.to(pRig.p.foreR, { rotation: -20, duration: 0.12, repeat: 4, yoyo: true, ease: "sine.inOut" }, 9.88);
+        }
       }
       if (pRig?.p.head) {
-        tl.to(pRig.p.head, { rotation: 3, duration: 0.3, yoyo: true, repeat: 1, ease: "sine.inOut" }, 9.3);
+        tl.to(pRig.p.head, { rotation: 4, duration: 0.25, yoyo: true, repeat: 1, ease: "sine.inOut" }, 9.82);
       }
 
-      // 5. Welcome scene completes smoothly before railway transfer begins
-      if (welcome) tl.to(welcome, { autoAlpha: 0, y: 555, duration: 0.22, ease: "power1.in" }, 9.85);
+      // 5. Welcome scene settles cleanly; then gracefully transitions as scroll continues toward Rail transfer
+      if (welcome) tl.to(welcome, { autoAlpha: 0, x: -20, duration: 0.32, ease: "power1.in" }, 10.35);
       if (representative && passenger) {
-        tl.to([representative, passenger], { autoAlpha: 0, duration: 0.25, ease: "power1.in" }, 9.9);
+        tl.to([representative, passenger], { autoAlpha: 0, duration: 0.28, ease: "power1.in" }, 10.4);
       }
-      if (plane) tl.to(plane, { x: -600, duration: 0.6, ease: "power2.in" }, 9.95);
-      camX(7200, 0.65, 9.95, "power1.inOut");
+      if (plane) tl.to(plane, { x: -600, duration: 0.65, ease: "power2.in" }, 10.45);
+      camX(7200, 0.75, 10.45, "power1.inOut");
 
-      // 3 · train (Rail Step 3 starts at 10.2)
-      if (train) tl.to(train, { x: 1200, duration: 0.9, ease: "power2.out" }, 10.2);
-      spin(train, deg(3300, 11), 0.9, 10.2, "power2.out");
-      camX(7600, 1.2, 10.5);
-      spin(train, deg(1600, 11), 1.2, 10.5);
-      wave($("#jTrain .mini-hand", svg), 10.6, 9);
+      // 3 · train (Rail Step 3 starts at 10.7)
+      tl.addLabel("rail", 10.7);
+      if (train) tl.to(train, { x: 1200, duration: 0.9, ease: "power2.out" }, 10.7);
+      spin(train, deg(3300, 11), 0.9, 10.7, "power2.out");
+      camX(7600, 1.2, 11.0);
+      spin(train, deg(1600, 11), 1.2, 11.0);
+      wave($("#jTrain .mini-hand", svg), 11.1, 9);
 
-      // 4 · coach takes over on the road (Step 4 starts at 11.6)
-      if (coach) tl.to(coach, { x: 800, duration: 0.8, ease: "power2.out" }, 11.6);
-      spin(coach, deg(2200, 27), 0.8, 11.6, "power2.out");
-      if (train) tl.to(train, { x: 3300, duration: 0.75, ease: "power2.in" }, 11.75);
-      spin(train, deg(3000, 11), 0.75, 11.75, "power2.in");
-      camX(8450, 1, 11.95);
-      spin(coach, deg(900, 27), 1, 12.35);
-      wave($("#jCoach .mini-hand", svg), 12.0, 7);
+      // 4 · coach takes over on the road (Step 4 starts at 12.1)
+      tl.addLabel("coach", 12.1);
+      if (coach) tl.to(coach, { x: 800, duration: 0.8, ease: "power2.out" }, 12.1);
+      spin(coach, deg(2200, 27), 0.8, 12.1, "power2.out");
+      if (train) tl.to(train, { x: 3300, duration: 0.75, ease: "power2.in" }, 12.25);
+      spin(train, deg(3000, 11), 0.75, 12.25, "power2.in");
+      camX(8450, 1, 12.45);
+      spin(coach, deg(900, 27), 1, 12.85);
+      wave($("#jCoach .mini-hand", svg), 12.5, 7);
 
-      // 5 · VIP car to the venue (Step 5 starts at 13.0)
-      if (coach) tl.to(coach, { x: 2200, duration: 0.65, ease: "power2.in" }, 12.95);
-      spin(coach, deg(2200, 27), 0.65, 12.95, "power2.in");
-      if (mpv) tl.to(mpv, { x: 800, duration: 0.7, ease: "power2.out" }, 13.05);
-      spin(mpv, deg(2100, 23), 0.7, 13.05, "power2.out");
-      camX(9200, 0.75, 12.95);
-      camX(9600, 0.6, 13.7, "power2.out");
-      if (mpv) tl.to(mpv, { x: 680, duration: 0.6, ease: "power2.out" }, 13.7);
-      spin(mpv, deg(280, 23), 0.6, 13.7, "power2.out");
+      // 5 · VIP car to the venue (Step 5 starts at 13.5)
+      tl.addLabel("vip-car", 13.5);
+      if (coach) tl.to(coach, { x: 2200, duration: 0.65, ease: "power2.in" }, 13.45);
+      spin(coach, deg(2200, 27), 0.65, 13.45, "power2.in");
+      if (mpv) tl.to(mpv, { x: 800, duration: 0.7, ease: "power2.out" }, 13.55);
+      spin(mpv, deg(2100, 23), 0.7, 13.55, "power2.out");
+      camX(9200, 0.75, 13.45);
+      camX(9600, 0.6, 14.2, "power2.out");
+      if (mpv) tl.to(mpv, { x: 680, duration: 0.6, ease: "power2.out" }, 14.2);
+      spin(mpv, deg(280, 23), 0.6, 14.2, "power2.out");
 
-      // 6 · arrival — Nila steps out and walks under the flower arch (Step 6 starts at 14.35)
-      tl.to($("#jMpv .mini-wrap", svg), { autoAlpha: 0, duration: 0.08 }, 14.35);
-      tl.to(nila, { x: 650, y: 800, scale: 1, duration: 0.01 }, 14.33);
-      tl.to(nila, { autoAlpha: 1, duration: 0.15 }, 14.37);
-      tl.to(nila, { x: 1060, y: 728, scale: 0.9, duration: 0.6 }, 14.5);
-      walkLegs(14.5, 0.6);
-      if (jr.p.armR) tl.to(jr.p.armR, { rotation: 148, duration: 0.15 }, 15.1);
-      if (jr.p.foreR) tl.to(jr.p.foreR, { rotation: -26, duration: 0.1, repeat: 5, yoyo: true }, 15.25);
-      tl.to(petals, { y: "+=880", x: "random(-70, 70)", rotation: "random(-300, 300)", duration: 1.2, stagger: 0.015 }, 14.35);
-      tl.to({}, { duration: 0.5 }, 15.65);
+      // 6 · arrival — Nila steps out and walks under the flower arch (Step 6 starts at 14.85)
+      tl.addLabel("arrival", 14.85);
+      tl.to($("#jMpv .mini-wrap", svg), { autoAlpha: 0, duration: 0.08 }, 14.85);
+      tl.to(nila, { x: 650, y: 800, scale: 1, duration: 0.01 }, 14.83);
+      tl.to(nila, { autoAlpha: 1, duration: 0.15 }, 14.87);
+      tl.to(nila, { x: 1060, y: 728, scale: 0.9, duration: 0.6 }, 15.0);
+      walkLegs(15.0, 0.6);
+      if (jr.p.armR) tl.to(jr.p.armR, { rotation: 148, duration: 0.15 }, 15.6);
+      if (jr.p.foreR) tl.to(jr.p.foreR, { rotation: -26, duration: 0.1, repeat: 5, yoyo: true }, 15.75);
+      tl.to(petals, { y: "+=880", x: "random(-70, 70)", rotation: "random(-300, 300)", duration: 1.2, stagger: 0.015 }, 14.85);
+      tl.to({}, { duration: 0.5 }, 16.15);
 
       // caption cards
       STAGES.forEach((t, i) => {

@@ -6,7 +6,7 @@ export default function EnquireSection() {
     <section
       className="enquire sec"
       id="enquire"
-      data-nila="Tell me where you’re going. Sending opens Whats·pp with your details."
+      data-nila="Tell me where you’re going. Sending opens WhatsApp with your details."
       data-nila-pose="wave"
     >
       <div className="wrap enquire__grid">
@@ -33,7 +33,7 @@ export default function EnquireSection() {
               </a>
             </li>
             <li>
-              <span className="mono">Whats·pp</span>
+              <span className="mono">WhatsApp</span>
               <a data-contact="whatsapp" href={CONTACT_DETAILS.whatsapp.link} target="_blank" rel="noopener">
                 {CONTACT_DETAILS.whatsapp.label}
               </a>
